@@ -141,11 +141,32 @@
       padding: 0;
       margin: 0;
     }
-    /* زر تسجيل الخروج أقصى اليسار */
-    .bottom-bar form {
-      order: 1;
-      width: 80px;
-      justify-content: flex-start;
+    .bottom-bar a#vip-settings-bottom {
+      font-size: 24px;
+      color: #fff;
+      margin-right: 4px;
+      margin-left: 4px;
+      background: none;
+      border: none;
+      cursor: pointer;
+      transition: color 0.2s;
+    }
+    .bottom-bar a#vip-settings-bottom:hover {
+      color: #ffd700;
+    }
+    .bottom-bar a.bottom-link {
+      font-size: 12px;
+      color: #fff;
+      margin: 0 2px;
+      font-weight: bold;
+      text-decoration: none;
+      padding: 4px 10px;
+      border-radius: 5px;
+      transition: background 0.2s;
+    }
+    .bottom-bar a.bottom-link:hover {
+      background: rgba(255,255,255,0.13);
+      text-decoration: underline;
     }
     .bottom-bar button.logout-small-btn {
       width: 80px;
@@ -157,42 +178,11 @@
       font-size: 11px !important;
       cursor: pointer;
       box-shadow: 0 2px 6px rgba(0,0,0,0.3);
+      text-align: center;
       min-width: 50px;
       max-width: 120px;
       height: 22px;
-      display: flex;
-      align-items: center;
-      justify-content: center; /* هذا يجعل النص دائماً بالمنتصف */
-      text-align: center;
-    }
-    .bottom-bar a.bottom-link {
-      font-size: 12px;
-      color: #fff;
-      margin: 0 2px;
-      font-weight: bold;
-      text-decoration: none;
-      padding: 4px 10px;
-      border-radius: 5px;
-      transition: background 0.2s;
-      order: unset;
-    }
-    .bottom-bar a.bottom-link:hover {
-      background: rgba(255,255,255,0.13);
-      text-decoration: underline;
-    }
-    .bottom-bar a#vip-settings-bottom {
-      font-size: 24px;
-      color: #fff;
       margin-right: 4px;
-      margin-left: 4px;
-      background: none;
-      border: none;
-      cursor: pointer;
-      transition: color 0.2s;
-      order: 4; /* الترس في أقصى اليمين */
-    }
-    .bottom-bar a#vip-settings-bottom:hover {
-      color: #ffd700;
     }
     /* ============================= */
 
@@ -295,12 +285,12 @@
 
   <!-- شريط الأدوات الهورزونتل تحت الكروت -->
   <div class="bottom-bar">
+    <a id="vip-settings-bottom" href="/vip_login" title="إعدادات VIP">⚙️</a>
+    <a href="/about" class="bottom-link">من نحن</a>
+    <a href="/privacy" class="bottom-link">سياسة الخصوصية</a>
     <form action="{{ url_for('logout') }}" method="GET" style="display:inline;">
       <button type="submit" class="logout-small-btn">تسجيل خروج</button>
     </form>
-    <a href="/about" class="bottom-link">من نحن</a>
-    <a href="/privacy" class="bottom-link">سياسة الخصوصية</a>
-    <a id="vip-settings-bottom" href="/vip_login" title="إعدادات VIP">⚙️</a>
   </div>
 
   <script>
