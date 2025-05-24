@@ -119,11 +119,89 @@
       transform: translateY(-2px);
     }
 
+    /* ======= الهورزونتل بار ======= */
+    .bottom-bar {
+      display: flex;
+      flex-direction: row;
+      justify-content: center;
+      align-items: center;
+      gap: 18px;
+      margin-top: 44px;  /* مسافة فوق العرض تقارب عرض الكارت */
+      margin-bottom: 18px;
+      width: 80%;
+      max-width: 400px;
+      z-index: 20;
+    }
+    .bottom-bar a, .bottom-bar button, .bottom-bar form {
+      display: flex;
+      align-items: center;
+      text-decoration: none;
+      background: none;
+      border: none;
+      padding: 0;
+      margin: 0;
+    }
+    /* زر تسجيل الخروج أقصى اليسار */
+    .bottom-bar form {
+      order: 1;
+      width: 80px;
+      justify-content: flex-start;
+    }
+    .bottom-bar button.logout-small-btn {
+      width: 80px;
+      background-color: #b71c1c;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      padding: 3px 0 !important;
+      font-size: 11px !important;
+      cursor: pointer;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.3);
+      min-width: 50px;
+      max-width: 120px;
+      height: 22px;
+      display: flex;
+      align-items: center;
+      justify-content: center; /* هذا يجعل النص دائماً بالمنتصف */
+      text-align: center;
+    }
+    .bottom-bar a.bottom-link {
+      font-size: 12px;
+      color: #fff;
+      margin: 0 2px;
+      font-weight: bold;
+      text-decoration: none;
+      padding: 4px 10px;
+      border-radius: 5px;
+      transition: background 0.2s;
+      order: unset;
+    }
+    .bottom-bar a.bottom-link:hover {
+      background: rgba(255,255,255,0.13);
+      text-decoration: underline;
+    }
+    .bottom-bar a#vip-settings-bottom {
+      font-size: 24px;
+      color: #fff;
+      margin-right: 4px;
+      margin-left: 4px;
+      background: none;
+      border: none;
+      cursor: pointer;
+      transition: color 0.2s;
+      order: 4; /* الترس في أقصى اليمين */
+    }
+    .bottom-bar a#vip-settings-bottom:hover {
+      color: #ffd700;
+    }
+    /* ============================= */
+
     @media (max-width: 768px) {
       html { font-size: 14px; }
       .card, .enter-exam { font-size: 0.95rem; padding: 10px; }
       .english-title { font-size: 1.6rem; }
       .arabic-title { font-size: 0.9rem; }
+      .bottom-bar { width: 94%; }
     }
 
     @media (max-width: 480px) {
@@ -131,53 +209,7 @@
       .card { padding: 8px 12px; }
       .english-title { font-size: 1.15rem; }
       .arabic-title { font-size: 0.8rem; }
-    }
-
-    a#vip-settings {
-      position: absolute;
-      top: 20px;
-      right: 20px;
-      font-size: 26px;
-      color: #ffffff;
-      text-decoration: none;
-      z-index: 20;
-    }
-
-    .top-right-links {
-      position: absolute;
-      top: 60px;
-      right: 20px;
-      text-align: right;
-      z-index: 20;
-    }
-
-    .top-right-links a {
-      display: block;
-      color: #ffffff;
-      font-size: 12px;
-      font-weight: bold;
-      margin-bottom: 5px;
-      text-decoration: none;
-    }
-
-    .top-right-links a:hover {
-      text-decoration: underline;
-    }
-
-    .logout-small-btn {
-      width: 50% !important;
-      background-color: #b71c1c;
-      color: white;
-      border: none;
-      border-radius: 6px;
-      padding: 3px 0 !important;
-      font-size: 10px !important;
-      cursor: pointer;
-      box-shadow: 0 2px 6px rgba(0,0,0,0.3);
-      text-align: center;
-      min-width: 55px;
-      max-width: 120px;
-      height: 20px;
+      .bottom-bar { gap: 8px; }
     }
 
     .hidden-cards {
@@ -233,19 +265,10 @@
 </head>
 <body>
 
-  <a id="vip-settings" href="/vip_login" title="إعدادات VIP">⚙️</a>
+  <a id="vip-settings" href="/vip_login" title="إعدادات VIP" style="display:none;">⚙️</a>
 
-  <div class="top-right-links">
-    <a href="/about">من نحن</a>
-    <a href="/privacy">سياسة الخصوصية</a>
-
-    <form action="{{ url_for('logout') }}" method="GET" style="margin-top:10px;">
-      <button type="submit" class="logout-small-btn">
-        تسجيل خروج
-      </button>
-    </form>
-  </div>
-
+  <!-- لم يعد هناك .top-right-links أعلى الصفحة -->
+  
   <div class="top-left-title">
     <p class="arabic-title">مرحباً بكم في</p>
     <p class="english-title">Prometric (Dent Said)</p>
@@ -268,6 +291,16 @@
                        'Pathology', 'Radiology', 'Removable Prosthodontic', 'Oral Medicine'] %}
       <div class="card" onclick="showOptions('{{ subject }}')">{{ subject }}</div>
     {% endfor %}
+  </div>
+
+  <!-- شريط الأدوات الهورزونتل تحت الكروت -->
+  <div class="bottom-bar">
+    <form action="{{ url_for('logout') }}" method="GET" style="display:inline;">
+      <button type="submit" class="logout-small-btn">تسجيل خروج</button>
+    </form>
+    <a href="/about" class="bottom-link">من نحن</a>
+    <a href="/privacy" class="bottom-link">سياسة الخصوصية</a>
+    <a id="vip-settings-bottom" href="/vip_login" title="إعدادات VIP">⚙️</a>
   </div>
 
   <script>
