@@ -207,8 +207,6 @@
 
   <p id="question">{{ question['question'] | safe }}</p>
 
-
-
   {% for choice in question['choices'] %}
     <div class="card" onclick="checkAnswer(this)" data-choice="{{ choice }}">{{ choice }}</div>
   {% endfor %}
@@ -238,7 +236,8 @@
 <script>
   let totalTime = 3600, remainingTime = totalTime, interval, isPaused = false;
   let timeLeft = 30, timerId = null, isMuted = false, answered = false;
-  const correctAnswer = "{{ question['correct'] }}", questionIndex = {{ index }};
+  // السطر المعدل هنا:
+  const correctAnswer = "{{ question['correct'] }}", questionIndex = {{ question_id }};
   const soundCorrect = document.getElementById('sound-correct');
   const soundWrong = document.getElementById('sound-wrong');
 
@@ -271,7 +270,6 @@
 }
 
 }
-
 
   function runTimer() {
     interval = setInterval(() => {
@@ -315,7 +313,6 @@
     }
   }, 1000);
 }
-
 
   function checkAnswer(el) {
     if (answered) return;

@@ -286,9 +286,11 @@ def quiz():
         pos = session.get('current_pos', 0)
         if pos >= len(indexes):
             return redirect(url_for('result'))
-        question = all_questions[indexes[pos]]
+        real_index = indexes[pos]
+        question = all_questions[real_index]
         index = pos + 1
         total = len(indexes)
+        question_id = real_index + 1   # انتبه هنا: index الأصلي يبدأ من 0
     else:
         current_index = session.get('current_index', 1)
         if current_index > len(questions):
@@ -296,6 +298,7 @@ def quiz():
         question = questions[current_index - 1]
         index = current_index
         total = len(questions)
+        question_id = current_index   # هنا طبيعي
 
     score = session.get('score', 0)
     attempted = session.get('attempted', 0)
@@ -305,6 +308,7 @@ def quiz():
     return render_template('quiz.html',
                            question=question,
                            index=index,
+                           question_id=question_id,  # ← أضف هذا
                            score=score,
                            attempted=attempted,
                            percentage=percentage,
@@ -399,13 +403,28 @@ def finish_session():
 
 @app.route('/explanation/<int:index>')
 def explanation(index):
-    if 0 < index <= len(questions):
-        q = questions[index - 1]
-        return jsonify({
-            'explanation': q['explanation'],
-            'detailed': q['detailed']
-        })
-    return jsonify({'explanation': '', 'detailed': ''})
+    # وضع الجلسة عشوائي أم تسلسلي
+    if 'shuffled_indexes' in session:
+        indexes = session['shuffled_indexes']
+        pos = session.get('current_pos', 0)
+        if 0 <= pos < len(indexes):
+            real_index = indexes[pos]
+            q = all_questions[real_index]
+            return jsonify({
+                'explanation': q['explanation'],
+                'detailed': q['detailed']
+            })
+        else:
+            return jsonify({'explanation': '', 'detailed': ''})
+    else:
+        # الوضع التسلسلي العادي (المواد أو الكل)
+        if 0 < index <= len(questions):
+            q = questions[index - 1]
+            return jsonify({
+                'explanation': q['explanation'],
+                'detailed': q['detailed']
+            })
+        return jsonify({'explanation': '', 'detailed': ''})
 
 @app.route('/result')
 def result():
