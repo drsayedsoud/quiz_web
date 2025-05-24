@@ -1,1 +1,6 @@
-flask_quiz_full_project/requirements.txt
+flask
+gunicorn
+google-auth
+google-api-python-client
+pandas
+openpyxl
