@@ -65,7 +65,7 @@
     }
 
     .header {
-      margin-top: 150px;
+      margin-top: 75px;   /* ← قللت المسافة للنصف */
       text-align: center;
       width: 100%;
     }
@@ -168,22 +168,26 @@
       background: rgba(255,255,255,0.13);
       text-decoration: underline;
     }
-    .bottom-bar button.logout-small-btn {
-      width: 80px;
-      background-color: #b71c1c;
-      color: white;
-      border: none;
-      border-radius: 6px;
-      padding: 3px 0 !important;
-      font-size: 11px !important;
-      cursor: pointer;
-      box-shadow: 0 2px 6px rgba(0,0,0,0.3);
-      text-align: center;
-      min-width: 50px;
-      max-width: 120px;
-      height: 22px;
-      margin-right: 4px;
-    }
+   .bottom-bar button.logout-small-btn {
+    width: 80px;
+    background-color: #b71c1c;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    padding: 3px 0 !important;
+    font-size: 11px !important;
+    cursor: pointer;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.3);
+    text-align: center;
+    min-width: 50px;
+    max-width: 120px;
+    height: 22px;
+    margin-right: 4px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
     /* ============================= */
 
     @media (max-width: 768px) {
