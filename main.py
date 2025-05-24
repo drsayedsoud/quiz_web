@@ -7,16 +7,14 @@ import base64
 import pandas as pd
 import threading
 import random
-import datetime  # ✅ أضف هذا السطر
+import datetime
 
-# ملفات البيانات: تأكد من رفعها على Replit ضمن الملفات
 EXCEL_FILE = 'quiz_shuffle.xlsx'
 USER_COUNTER_FILE = "user_counters.json"
 RATINGS_FILE = "ratings.json"
-SERVICE_ACCOUNT_FILE = 'dental-world-dde59-cb4421544a45.json'  # رفع الملف هنا
-SESSIONS_FILE = "user_sessions.json"  # ✅ ملف الجلسات الجديدة
+SERVICE_ACCOUNT_FILE = 'dental-world-dde59-cb4421544a45.json'
+SESSIONS_FILE = "user_sessions.json"
 
-# تحميل الأسئلة من ملف الإكسل
 def load_all_questions_from_excel():
     df = pd.read_excel(EXCEL_FILE)
     questions = []
@@ -33,7 +31,7 @@ def load_all_questions_from_excel():
 all_questions = load_all_questions_from_excel()
 
 app = Flask(__name__)
-app.secret_key = 'your_secret_key_here'  # يمكنك تغييره
+app.secret_key = 'your_secret_key_here'
 
 ratings_lock = threading.Lock()
 
@@ -136,7 +134,6 @@ def get_questions():
         ).execute()
         rows = result.get('values', [])
 
-        # تحديث النسخة المحلية على Replit
         if os.path.exists("quiz_web_site.xlsx"):
             os.remove("quiz_web_site.xlsx")
         df = pd.DataFrame(rows)
@@ -169,7 +166,6 @@ def get_questions():
 
 questions = get_questions()
 
-# ==== كود تخزين الجلسات واسترجاعها ====
 def save_user_session(email, score, attempted):
     today = datetime.datetime.now().strftime('%Y-%m-%d')
     session_data = {
@@ -199,8 +195,6 @@ def get_user_sessions(email):
         return [d for d in data if d['email'] == email]
     return []
 
-# ====== Routes (تراوت) ======
-
 @app.route('/')
 def root_redirect():
     if 'email' in session:
@@ -224,13 +218,11 @@ def set_email():
 def start():
     last_index = session.get('last_index', None)
     total_questions = len(questions)
-
     email = session.get('email')
     if email:
         session['global_question_counter'] = load_user_counter(email)
     else:
         session['global_question_counter'] = 0
-
     return render_template('start.html',
                            last_index=last_index,
                            total_questions=total_questions)
@@ -248,7 +240,6 @@ def start_session():
         session['subject'] = choice
         session.pop('shuffled_indexes', None)
         session.pop('current_pos', None)
-
     elif choice == 'new':
         total_questions = len(all_questions)
         selected_indexes = random.sample(range(total_questions), min(300, total_questions))
@@ -257,13 +248,11 @@ def start_session():
         session['score'] = 0
         session['attempted'] = 0
         session.pop('subject', None)
-
     elif choice == 'resume_exam':
         session['current_pos'] = session.get('last_pos', 0)
         session['score'] = 0
         session['attempted'] = 0
         session.pop('subject', None)
-
     else:
         session['current_index'] = 1
         session['score'] = 0
@@ -290,7 +279,7 @@ def quiz():
         question = all_questions[real_index]
         index = pos + 1
         total = len(indexes)
-        question_id = real_index + 1   # انتبه هنا: index الأصلي يبدأ من 0
+        question_id = real_index + 1
     else:
         current_index = session.get('current_index', 1)
         if current_index > len(questions):
@@ -298,7 +287,7 @@ def quiz():
         question = questions[current_index - 1]
         index = current_index
         total = len(questions)
-        question_id = current_index   # هنا طبيعي
+        question_id = current_index
 
     score = session.get('score', 0)
     attempted = session.get('attempted', 0)
@@ -308,7 +297,7 @@ def quiz():
     return render_template('quiz.html',
                            question=question,
                            index=index,
-                           question_id=question_id,  # ← أضف هذا
+                           question_id=question_id,
                            score=score,
                            attempted=attempted,
                            percentage=percentage,
@@ -330,7 +319,6 @@ def check():
     session['score'] = score
     session['attempted'] = attempted
 
-    # تحديث العداد العام وحفظه
     email = session.get('email')
     if email:
         current_count = load_user_counter(email)
@@ -344,8 +332,6 @@ def check():
         'score': score,
         'attempted': attempted
     })
-
-from flask import session, redirect, url_for
 
 @app.route('/logout')
 def logout():
@@ -380,7 +366,6 @@ def finish_session():
     attempted = session.get('attempted', 0)
     percentage = (score / attempted * 100) if attempted > 0 else 0
 
-    # ✅ حفظ الجلسة في ملف خارجي مع التاريخ والبريد
     email = session.get('email')
     if email:
         save_user_session(email, score, attempted)
@@ -391,7 +376,6 @@ def finish_session():
             session['revision_indexes'] = {}
         session['revision_indexes'][subject_name] = session.get('current_index', 1)
 
-    # ✅ جلب بيانات جميع الجلسات السابقة
     user_sessions = get_user_sessions(email) if email else []
 
     return render_template('finish.html',
@@ -399,11 +383,10 @@ def finish_session():
                            score=score,
                            attempted=attempted,
                            percentage=percentage,
-                           user_sessions=user_sessions)  # أضف بيانات الجلسات هنا
+                           user_sessions=user_sessions)
 
 @app.route('/explanation/<int:index>')
 def explanation(index):
-    # وضع الجلسة عشوائي أم تسلسلي
     if 'shuffled_indexes' in session:
         indexes = session['shuffled_indexes']
         pos = session.get('current_pos', 0)
@@ -417,7 +400,6 @@ def explanation(index):
         else:
             return jsonify({'explanation': '', 'detailed': ''})
     else:
-        # الوضع التسلسلي العادي (المواد أو الكل)
         if 0 < index <= len(questions):
             q = questions[index - 1]
             return jsonify({
@@ -476,8 +458,6 @@ def toggle_comments():
     data['visible'] = not data.get('visible', True)
     save_ratings(data)
     return jsonify({"visible": data['visible']})
-
-# لوحة تحكم VIP
 
 @app.route('/vip_login', methods=['GET', 'POST'])
 def vip_login():

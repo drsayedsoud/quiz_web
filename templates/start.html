@@ -15,11 +15,11 @@
       background-attachment: fixed;
       background-repeat: no-repeat;
       min-height: 100vh;
+      color: #fff;
+      position: relative;
       display: flex;
       flex-direction: column;
       align-items: center;
-      color: #fff;
-      position: relative;
     }
     /* تغميق الخلفية */
     body::before {
@@ -27,64 +27,62 @@
       position: fixed;
       top: 0; left: 0; right: 0; bottom: 0;
       width: 100vw; height: 100vh;
-      background: rgba(0,0,0,0.56); /* زوّد الشفافية للضعف */
+      background: rgba(0,0,0,0.56);
       pointer-events: none;
       z-index: 0;
     }
 
-    .top-left-title,
-    .header,
-    .subjects,
-    .top-right-links {
+    .main-container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      width: 100vw;
+      min-height: 100vh;
       position: relative;
       z-index: 2;
-    }
-
-    .top-left-title {
-      position: absolute;
-      top: 20px;
-      left: 20px;
-      background-color: rgba(0,0,0,0.5);
-      padding: 10px;
-      border-radius: 10px;
-      z-index: 10;
-      text-align: left;
-    }
-
-    .arabic-title {
-      font-size: 1rem;
-      font-weight: 400;
-      margin: 0;
+      padding-top: 35px;
+      padding-bottom: 30px;
     }
 
     .english-title {
-      font-size: 2.7rem;
+      font-size: 2.3rem;
       font-weight: bold;
-      margin: 0;
       text-shadow: 2px 2px 6px rgba(0,0,0,0.6);
+      margin: 0 0 5px 0;
+      text-align: center;
+    }
+    .arabic-title {
+      font-size: 1.2rem;
+      margin: 0 0 0 0;
+      text-align: center;
+      font-weight: 400;
     }
 
-    .header {
-      margin-top: 150px;
+    .question-counter {
+      font-size: 1.1rem;
+      color: #ffd700;
+      margin: 6px 0 20px 0;
       text-align: center;
-      width: 100%;
     }
 
     .enter-exam {
       background-color: #2e7d32;
       color: white;
       border-radius: 12px;
-      padding: 12px 25px;
+      padding: 12px 0;
       font-size: 18px;
       font-weight: bold;
-      margin: 20px auto;
+      margin: 0 auto 16px auto;
       cursor: pointer;
       box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
       transition: background-color 0.3s ease;
       border: none;
-      display: inline-block;
+      width: 90%;
+      max-width: 400px;
+      display: block;
+      text-align: center;
     }
-
     .enter-exam:hover {
       background-color: #388e3c;
     }
@@ -93,183 +91,128 @@
       display: flex;
       flex-direction: column;
       align-items: center;
-      margin: 15px 0 10px;
+      margin: 0 0 20px 0;
       gap: 8px;
       width: 90%;
       max-width: 400px;
     }
-
     .card {
       background-color: rgba(255, 255, 255, 0.15);
-      color: #fff; /* خط أبيض */
+      color: #fff;
       text-shadow: 1px 1px 4px rgba(0,0,0,0.4);
       border-radius: 10px;
       padding: 10px 20px;
-      width: 80%;
+      width: 100%;
       text-align: center;
       font-weight: bold;
       cursor: pointer;
       box-shadow: 0 3px 8px rgba(0, 0, 0, 0.4);
       transition: all 0.3s ease;
       user-select: none;
+      font-size: 1rem;
     }
-
     .card:hover {
       background-color: rgba(255, 255, 255, 0.22);
       transform: translateY(-2px);
     }
 
-    @media (max-width: 768px) {
-      html { font-size: 14px; }
-      .card, .enter-exam { font-size: 0.95rem; padding: 10px; }
-      .english-title { font-size: 1.6rem; }
-      .arabic-title { font-size: 0.9rem; }
+    .footer-links {
+      width: 90%;
+      max-width: 400px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      margin-top: 16px;
+      gap: 9px;
     }
-
-    @media (max-width: 480px) {
-      html { font-size: 13px; }
-      .card { padding: 8px 12px; }
-      .english-title { font-size: 1.15rem; }
-      .arabic-title { font-size: 0.8rem; }
-    }
-
-    a#vip-settings {
-      position: absolute;
-      top: 20px;
-      right: 20px;
-      font-size: 26px;
-      color: #ffffff;
-      text-decoration: none;
-      z-index: 20;
-    }
-
-    .top-right-links {
-      position: absolute;
-      top: 60px;
-      right: 20px;
-      text-align: right;
-      z-index: 20;
-    }
-
-    .top-right-links a {
-      display: block;
-      color: #ffffff;
-      font-size: 12px;
+    .footer-link {
+      font-size: 1rem;
+      color: #fff;
       font-weight: bold;
-      margin-bottom: 5px;
       text-decoration: none;
+      background: none;
+      border: none;
+      padding: 7px 0;
+      border-radius: 5px;
+      text-align: center;
+      width: 100%;
+      transition: background 0.2s;
+      cursor: pointer;
+      display: block;
     }
-
-    .top-right-links a:hover {
+    .footer-link:hover {
+      background: rgba(255,255,255,0.13);
       text-decoration: underline;
     }
-
     .logout-small-btn {
-      width: 50% !important;
+      width: 100%;
       background-color: #b71c1c;
       color: white;
       border: none;
       border-radius: 6px;
-      padding: 3px 0 !important;
-      font-size: 10px !important;
+      padding: 8px 0 !important;
+      font-size: 1rem !important;
       cursor: pointer;
       box-shadow: 0 2px 6px rgba(0,0,0,0.3);
       text-align: center;
-      min-width: 55px;
-      max-width: 120px;
-      height: 20px;
+      margin-top: 3px;
+      display: block;
     }
-
-    .hidden-cards {
-      opacity: 0;
-      transform: translateX(-30px);
-      transition: opacity 0.4s ease, transform 0.4s ease;
-      pointer-events: none;
-      max-height: 0;
-      overflow: hidden;
-      flex-direction: column;
-      align-items: center;
-      gap: 10px;
-    }
-
-    .hidden-cards.visible {
-      opacity: 1;
-      transform: translateX(0);
-      pointer-events: auto;
-      max-height: 200px;
-      display: flex;
-    }
-
-    .small-card {
-      background-color: #1e1e1e;
-      border-radius: 10px;
-      padding: 12px;
+    .vip-icon {
+      font-size: 1.35rem;
       text-align: center;
-      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.6);
-      margin: 8px 0;
-    }
-
-    .small-card button {
-      background-color: #0d47a1;
-      color: white;
-      border: none;
-      padding: 10px 20px;
-      font-size: 16px;
-      border-radius: 8px;
+      color: #fff;
+      transition: color 0.2s;
+      margin-bottom: 3px;
       cursor: pointer;
     }
+    .vip-icon:hover { color: #ffd700; }
 
-    .small-card button:hover {
-      background-color: #1565c0;
+    @media (max-width: 768px) {
+      html { font-size: 14px; }
+      .english-title { font-size: 1.5rem; }
+      .subjects, .footer-links { max-width: 98vw; }
+      .enter-exam, .card { font-size: 0.95rem; }
+    }
+    @media (max-width: 480px) {
+      html { font-size: 12px; }
+      .english-title { font-size: 1.1rem; }
+      .subjects, .footer-links { max-width: 99vw; }
     }
   </style>
-  <!-- ... باقي الصفحة كما هي ... -->
-
-  <!-- أصوات -->
+  <!-- الأصوات -->
   <audio id="hover-main" src="{{ url_for('static', filename='hover_main.mp3') }}"></audio>
   <audio id="subject-sound" src="{{ url_for('static', filename='subject_sound.mp3') }}"></audio>
   <audio id="exam-sound" src="{{ url_for('static', filename='exam_sound.mp3') }}"></audio>
-
 </head>
 <body>
-
-  <a id="vip-settings" href="/vip_login" title="إعدادات VIP">⚙️</a>
-
-  <div class="top-right-links">
-    <a href="/about">من نحن</a>
-    <a href="/privacy">سياسة الخصوصية</a>
-
-    <form action="{{ url_for('logout') }}" method="GET" style="margin-top:10px;">
-      <button type="submit" class="logout-small-btn">
-        تسجيل خروج
-      </button>
-    </form>
-  </div>
-
-  <div class="top-left-title">
+  <div class="main-container">
     <p class="arabic-title">مرحباً بكم في</p>
     <p class="english-title">Prometric (Dent Said)</p>
-    <div style="font-size: 14px; margin-top: 6px; padding-bottom: 4px;">
+    <div class="question-counter">
       {{ session.get('global_question_counter', 0) }}<br>
       <span style="font-size: 12px;">/ {{ total_questions }}</span>
     </div>
-  </div>
-
-  <div class="header">
-    <form action="{{ url_for('start_session') }}" method="POST" style="display:inline;">
+    <form action="{{ url_for('start_session') }}" method="POST" style="width:90%; max-width:400px;">
       <input type="hidden" name="start_choice" value="new" />
       <button type="submit" class="enter-exam">🧪 ادخل اختبار الآن</button>
     </form>
+    <div class="subjects" id="subject-cards">
+      {% for subject in ['Endodontic', 'Operative', 'Oral Surgery', 'Periodontic',
+                         'Fixed Prosthodontic', 'Pedodontic', 'Orthodontic',
+                         'Pathology', 'Radiology', 'Removable Prosthodontic', 'Oral Medicine'] %}
+        <div class="card" onclick="showOptions('{{ subject }}')">{{ subject }}</div>
+      {% endfor %}
+    </div>
+    <div class="footer-links">
+      <a href="/privacy" class="footer-link">سياسة الخصوصية</a>
+      <a href="/about" class="footer-link">من نحن</a>
+      <a href="/vip_login" title="إعدادات VIP" class="vip-icon">⚙️</a>
+      <form action="{{ url_for('logout') }}" method="GET" style="width:100%;">
+        <button type="submit" class="logout-small-btn">تسجيل خروج</button>
+      </form>
+    </div>
   </div>
-
-  <div class="subjects" id="subject-cards">
-    {% for subject in ['Endodontic', 'Operative', 'Oral Surgery', 'Periodontic',
-                       'Fixed Prosthodontic', 'Pedodontic', 'Orthodontic',
-                       'Pathology', 'Radiology', 'Removable Prosthodontic', 'Oral Medicine'] %}
-      <div class="card" onclick="showOptions('{{ subject }}')">{{ subject }}</div>
-    {% endfor %}
-  </div>
-
   <script>
     const subjectLinks = {
       "Endodontic": "https://www.dentiscope.org/_files/ugd/66484b_13de14e0ee1245d098407d33277bd911.pdf",
@@ -284,15 +227,9 @@
       "Removable Prosthodontic": "https://www.dentiscope.org/_files/ugd/66484b_e90c5fcf18eb4709aad84faade7e29dc.pdf",
       "Oral Medicine": "https://www.dentiscope.org/_files/ugd/66484b_128003f99a6a4f29b33cddb345bc9c59.pdf"
     };
-
-    // صوت للكروت الكبيرة
     const hoverMainAudio = document.getElementById('hover-main');
-    // صوت للكروت الصغيرة
     const subjectSoundAudio = document.getElementById('subject-sound');
-    // صوت لزر الامتحان
     const examSoundAudio = document.getElementById('exam-sound');
-
-    // تشغيل صوت الكروت الكبيرة عند التحويم (hover)
     document.querySelectorAll('.card').forEach(card => {
       card.addEventListener('mouseenter', () => {
         try {
@@ -301,7 +238,6 @@
         } catch(e) {}
       });
     });
-
     function showOptions(subject) {
       const existing = document.querySelector(`[data-popup='${subject}']`);
       if (existing) {
@@ -309,11 +245,9 @@
         return;
       }
       document.querySelectorAll('[data-popup]').forEach(el => el.remove());
-
       const container = document.createElement("div");
       container.className = "hidden-cards visible";
       container.setAttribute("data-popup", subject);
-
       container.innerHTML = `
         <div class="small-card">
           <a href="${subjectLinks[subject]}" target="_blank">
@@ -326,7 +260,6 @@
             <button type="submit" id="exam-btn-${subject}">📝 اختبار في ${subject}</button>
           </form>
         </div>`;
-
       const subjectCards = document.getElementById("subject-cards");
       const cards = subjectCards.getElementsByClassName("card");
       for (let el of cards) {
@@ -335,8 +268,6 @@
           break;
         }
       }
-
-      // أضف صوت عند التحويم على كروت المواد الصغيرة
       container.querySelectorAll('.small-card button').forEach(btn => {
         btn.addEventListener('mouseenter', () => {
           try {
@@ -345,8 +276,6 @@
           } catch(e) {}
         });
       });
-
-      // أضف صوت عند الضغط على زر الاختبار
       const examBtn = document.getElementById(`exam-btn-${subject}`);
       examBtn.addEventListener('click', () => {
         try {
@@ -355,9 +284,7 @@
         } catch(e) {}
       });
     }
-
   </script>
-
   <style>
     .hidden-cards {
       opacity: 0;
@@ -370,7 +297,6 @@
       align-items: center;
       gap: 10px;
     }
-
     .hidden-cards.visible {
       opacity: 1;
       transform: translateX(0);
@@ -378,7 +304,6 @@
       max-height: 200px;
       display: flex;
     }
-
     .small-card {
       background-color: #1e1e1e;
       border-radius: 10px;
@@ -387,7 +312,6 @@
       box-shadow: 0 4px 10px rgba(0, 0, 0, 0.6);
       margin: 8px 0;
     }
-
     .small-card button {
       background-color: #0d47a1;
       color: white;
@@ -397,19 +321,16 @@
       border-radius: 8px;
       cursor: pointer;
     }
-
     .small-card button:hover {
       background-color: #1565c0;
     }
   </style>
   <script>
 let wakeLock = null;
-
 async function requestWakeLock() {
   try {
     if ('wakeLock' in navigator) {
       wakeLock = await navigator.wakeLock.request('screen');
-      // أعد طلب Wake Lock إذا فقد بسبب تغيّر التبويب أو فقد الاتصال المؤقت
       wakeLock.addEventListener('release', () => {
         console.log('Wake Lock was released');
       });
@@ -421,17 +342,12 @@ async function requestWakeLock() {
     console.error(`${err.name}, ${err.message}`);
   }
 }
-
-// أطلب الـ wake lock عند تحميل الصفحة
 window.addEventListener('load', requestWakeLock);
-
-// لو رجع المستخدم للصفحة بعد الخروج منها (Visibility change)
 document.addEventListener('visibilitychange', () => {
   if (wakeLock !== null && document.visibilityState === 'visible') {
     requestWakeLock();
   }
 });
-</script>
-
+  </script>
 </body>
 </html>
