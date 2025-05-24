@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+  <meta charset="UTF-8">
+  <title>تسجيل دخول المدير | VIP Manager</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <style>
+    body {
+      background: #15191e;
+      min-height: 100vh;
+      margin: 0;
+      font-family: 'Cairo', 'Segoe UI', sans-serif;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      color: #e0e0e0;
+    }
+    .login-box {
+      background: #222c36;
+      border-radius: 14px;
+      box-shadow: 0 4px 24px rgba(0,0,0,0.16);
+      padding: 40px 28px 32px 28px;
+      width: 100%;
+      max-width: 370px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+    }
+    .login-box h2 {
+      color: #4caf50;
+      font-size: 28px;
+      margin-bottom: 20px;
+      letter-spacing: 1px;
+      font-weight: 700;
+    }
+    .login-box label {
+      display: block;
+      margin-bottom: 9px;
+      font-size: 15px;
+      color: #9bc8f7;
+      text-align: right;
+      width: 100%;
+    }
+    .login-box input[type="password"] {
+      width: 100%;
+      padding: 12px 10px;
+      border-radius: 8px;
+      border: none;
+      background: #1c2229;
+      color: #fff;
+      margin-bottom: 18px;
+      font-size: 17px;
+      direction: ltr;
+      box-sizing: border-box;
+      outline: none;
+      transition: background 0.2s;
+    }
+    .login-box input[type="password"]:focus {
+      background: #232b36;
+    }
+    .login-box button {
+      width: 100%;
+      padding: 13px;
+      background: #4caf50;
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      font-size: 17px;
+      font-weight: bold;
+      cursor: pointer;
+      transition: background 0.25s;
+      margin-top: 7px;
+    }
+    .login-box button:hover {
+      background: #388e3c;
+    }
+    .error-message {
+      color: #e53935;
+      margin-top: 10px;
+      font-size: 14px;
+      display: {{ "block" if error_message else "none" }};
+    }
+    @media (max-width: 450px) {
+      .login-box {
+        padding: 30px 7px 22px 7px;
+        max-width: 97vw;
+      }
+      .login-box h2 { font-size: 20px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="login-box">
+    <h2>تسجيل دخول المدير</h2>
+    <form method="POST" action="/vip_login" onsubmit="return validateForm()">
+      <label for="admin_pass">كلمة المرور:</label>
+      <input type="password" id="admin_pass" name="password" placeholder="••••••••••" required />
+      <button type="submit">دخول</button>
+      <div id="error" class="error-message">{{ error_message or '' }}</div>
+    </form>
+  </div>
+  <script>
+    function validateForm() {
+      var pass = document.getElementById('admin_pass').value.trim();
+      if (pass.length < 6) {
+        document.getElementById('error').innerText = "كلمة المرور قصيرة جداً";
+        document.getElementById('error').style.display = "block";
+        return false;
+      }
+      return true;
+    }
+  </script>
+</body>
+</html>

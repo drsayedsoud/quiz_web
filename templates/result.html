@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <title>Quiz Result</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f0f8ff;
+            text-align: center;
+            padding: 100px 20px;
+        }
+        h1 {
+            color: #007BFF;
+            font-size: 48px;
+            margin-bottom: 20px;
+        }
+        p {
+            font-size: 24px;
+            margin-bottom: 40px;
+        }
+        a {
+            font-size: 20px;
+            text-decoration: none;
+            background: #007BFF;
+            color: white;
+            padding: 12px 30px;
+            border-radius: 8px;
+            transition: background 0.3s ease;
+        }
+        a:hover {
+            background: #0056b3;
+        }
+    </style>
+</head>
+<body>
+    <h1>🎉 Congratulations! 🎉</h1>
+    <p>Your Score: {{ score }} / {{ attempted }}</p>
+    <p>Percentage: {{ "%.1f"|format(percentage) }}%</p>
+    <a href="/">Try Again</a>
+</body>
+</html>

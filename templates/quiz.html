@@ -1,0 +1,388 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Prometric Dent Quiz</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      margin: 0;
+      padding: 0;
+      background-color: #121212;
+      color: #e0e0e0;
+      text-align: center;
+      direction: ltr;
+    }
+    .progress-container {
+      max-width: 800px;
+      margin: auto;
+      background: #2c2c2c;
+      border-radius: 8px;
+      overflow: hidden;
+    }
+    .progress-bar {
+      height: 20px;
+      width: 100%;
+      background-color: #4caf50;
+      transition: width 0.5s ease;
+    }
+    .timer-controls {
+      max-width: 800px;
+      margin: 10px auto 20px;
+      display: flex;
+      justify-content: center;
+      flex-wrap: wrap;
+      gap: 6px;
+    }
+    .timer-controls button {
+      flex: 1 0 18%;
+      min-width: 50px;
+      font-size: 13px;
+      padding: 5px 0;
+      border-radius: 6px;
+      background-color: #0d47a1;
+      color: white;
+      border: none;
+      cursor: pointer;
+    }
+    .timer-controls button.active-time-btn {
+      background-color: #ffca28 !important;
+      color: #000 !important;
+      font-weight: bold;
+    }
+    #pause-btn {
+      flex: 2 0 36%;
+      background-color: #2e7d32;
+    }
+    #pause-btn.paused {
+      background-color: #c62828 !important;
+    }
+    .mute-button {
+      position: absolute;
+      top: 8px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: transparent;
+      border: none;
+      font-size: 20px;
+      cursor: pointer;
+      color: #90caf9;
+    }
+    main {
+      max-width: 800px;
+      margin: auto;
+      background-color: #1e1e1e;
+      padding: 30px;
+      border-radius: 12px;
+      box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+      position: relative;
+      z-index: 1;
+      text-align: left;
+    }
+    .top-info {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-bottom: 10px;
+    }
+    .question-timer-container {
+      display: inline-block;
+      width: 100px;
+    }
+    .question-progress-bar {
+      height: 6px;
+      width: 100%;
+      background-color: #4caf50;
+      border-radius: 3px;
+      margin-top: 4px;
+      transition: width 0.5s ease, background-color 0.3s ease;
+    }
+    .card {
+      background: #2c2c2c;
+      border: 2px solid #444;
+      border-radius: 10px;
+      padding: 15px;
+      margin: 10px 0;
+      cursor: pointer;
+      transition: all 0.3s ease-in-out;
+      color: #fff;
+    }
+    .correct { background-color: #2e7d32 !important; border-color: #43a047; }
+    .incorrect { background-color: #c62828 !important; border-color: #ef5350; }
+    .button-container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 10px;
+      margin: 20px 0 40px;
+    }
+    .button-container button,
+    .button-container form {
+      width: 100%;
+      max-width: 400px;
+    }
+    button {
+      background-color: #1565c0;
+      color: white;
+      padding: 10px 20px;
+      border-radius: 6px;
+      border: none;
+      cursor: pointer;
+      width: 100%;
+    }
+    .ask-ai-btn { background-color: #8e24aa; }
+    form.finish-session button { background-color: #c62828; }
+    #explanation-box, #detailed-box {
+      margin-top: 15px;
+      background-color: #333;
+      border-radius: 10px;
+      padding: 15px;
+      color: #ddd;
+      display: none;
+    }
+    #score, #timer {
+      font-weight: bold;
+      color: #90caf9;
+      font-size: 18px;
+    }
+    h2 {
+      font-size: 28px;
+      font-weight: bold;
+      color: #64b5f6;
+      margin: 20px 0 10px;
+      text-align: center;
+    }
+    @media (max-width: 600px) {
+      main {
+        padding: 15px;
+      }
+      .card {
+        font-size: 0.95rem;
+        padding: 12px;
+      }
+      button {
+        font-size: 0.95rem;
+      }
+    }
+  </style>
+</head>
+<body>
+
+{% if not subject %}
+  <h2>🧪 Time-Limited Exam</h2>
+  <div class="progress-container">
+    <div id="progress-bar" class="progress-bar"></div>
+  </div>
+  <div class="timer-controls">
+    <button onclick="setExamTime(1, event)">1h</button>
+    <button onclick="setExamTime(2, event)">2h</button>
+    <button onclick="setExamTime(3, event)">3h</button>
+    <button onclick="setExamTime(4, event)">4h</button>
+    <button onclick="togglePause()" id="pause-btn">⏸️</button>
+  </div>
+{% endif %}
+
+<main>
+  <button id="mute-btn" class="mute-button" onclick="toggleMute()">🔊</button>
+
+  <div class="top-info">
+    <div id="score">Score: {{ score }} / {{ attempted }} ({{ "%.1f"|format(percentage) }}%)</div>
+    <div id="timer" class="question-timer-container">
+      Time Left: <span id="time">30</span> sec
+      <div id="question-progress-bar" class="question-progress-bar"></div>
+    </div>
+  </div>
+
+  {% if subject %}
+    <h2>📘 {{ subject }}</h2>
+  {% endif %}
+
+  {% if question['url'] %}
+    <img src="{{ question['url'] }}" alt="Question Image"
+         style="max-width:100%; margin-bottom: 15px; border-radius: 8px;">
+  {% endif %}
+
+  <p id="question">{{ question['question'] | safe }}</p>
+
+
+
+  {% for choice in question['choices'] %}
+    <div class="card" onclick="checkAnswer(this)" data-choice="{{ choice }}">{{ choice }}</div>
+  {% endfor %}
+
+  <div class="button-container">
+    <button onclick="goNext()">Next Question</button>
+    <button class="ask-ai-btn" onclick="askAI()">🤖 Ask AI</button>
+    {% if subject %}
+    <form action="{{ url_for('start_session') }}" method="POST">
+      <input type="hidden" name="start_choice" value="{{ subject }}">
+      <input type="hidden" name="reset_subject_index" value="true">
+      <button type="submit">Return to First Question</button>
+    </form>
+    {% endif %}
+    <form action="{{ url_for('finish_session') }}" method="POST" class="finish-session">
+      <button type="submit">Finish Session</button>
+    </form>
+  </div>
+
+  <div id="explanation-box"></div>
+  <div id="detailed-box"></div>
+
+  <audio id="sound-correct" src="{{ url_for('static', filename='win.mp3') }}"></audio>
+  <audio id="sound-wrong" src="{{ url_for('static', filename='lose.mp3') }}"></audio>
+</main>
+
+<script>
+  let totalTime = 3600, remainingTime = totalTime, interval, isPaused = false;
+  let timeLeft = 30, timerId = null, isMuted = false, answered = false;
+  const correctAnswer = "{{ question['correct'] }}", questionIndex = {{ index }};
+  const soundCorrect = document.getElementById('sound-correct');
+  const soundWrong = document.getElementById('sound-wrong');
+
+  function setExamTime(h, event) {
+    totalTime = h * 3600;
+    remainingTime = totalTime;
+    localStorage.setItem('quizTime', totalTime);
+    updateProgressBar();
+    document.querySelectorAll(".timer-controls button").forEach(b => b.classList.remove("active-time-btn"));
+    event.target.classList.add("active-time-btn");
+  }
+
+  function updateProgressBar() {
+    const p = remainingTime / totalTime * 100;
+    const bar = document.getElementById('progress-bar');
+    bar.style.width = `${p}%`;
+    bar.style.backgroundColor = p <= 25 ? '#c62828' : '#4caf50';
+  }
+
+  function togglePause() {
+  isPaused = !isPaused;
+  const btn = document.getElementById('pause-btn');
+  btn.innerText = isPaused ? '▶️' : '⏸️';
+  btn.classList.toggle('paused', isPaused);
+
+  if (isPaused) {
+  clearInterval(timerId);  // Pause question timer
+} else {
+  startTimer();            // Resume it
+}
+
+}
+
+
+  function runTimer() {
+    interval = setInterval(() => {
+      if (!isPaused && remainingTime > 0) {
+        remainingTime--;
+        updateProgressBar();
+        localStorage.setItem('remainingTime', remainingTime);
+      }
+    }, 1000);
+  }
+
+  function startTimer() {
+  if (timerId) clearInterval(timerId);
+  answered = false;
+
+  // Only reset timeLeft if invalid
+  if (timeLeft <= 0 || timeLeft > 30) timeLeft = 30;
+
+  const display = document.getElementById('time');
+  const qProgress = document.getElementById('question-progress-bar');
+
+  if (!display || !qProgress) return;
+
+  display.textContent = timeLeft;
+  qProgress.style.width = (timeLeft / 30) * 100 + "%";
+  qProgress.style.backgroundColor = timeLeft <= 10 ? "#c62828" : "#4caf50";
+
+  timerId = setInterval(() => {
+    if (isPaused || answered) return;
+
+    timeLeft--;
+    display.textContent = timeLeft;
+    qProgress.style.width = (timeLeft / 30) * 100 + "%";
+
+    if (timeLeft <= 10) qProgress.style.backgroundColor = "#c62828";
+
+    if (timeLeft <= 0) {
+      clearInterval(timerId);
+      alert('⏰ Time is up! Moving to the next question.');
+      goNext();
+    }
+  }, 1000);
+}
+
+
+  function checkAnswer(el) {
+    if (answered) return;
+    answered = true;
+    clearInterval(timerId);
+    timerId = null;
+    const selected = el.getAttribute('data-choice');
+    fetch('/check', {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({ selected, correct: correctAnswer })
+    }).then(res => res.json()).then(data => {
+      document.querySelectorAll('.card').forEach(card => {
+        card.classList.remove('correct', 'incorrect');
+        if (card.getAttribute('data-choice') === data.correct) card.classList.add('correct');
+        if (card.getAttribute('data-choice') === selected && data.result === 'incorrect')
+          card.classList.add('incorrect');
+      });
+      if (!isMuted) {
+        (data.result === 'correct' ? soundCorrect : soundWrong).play();
+      }
+      fetch(`/explanation/${questionIndex}`).then(res => res.json()).then(data => {
+        document.getElementById('explanation-box').innerText = '📘 Explanation: ' + data.explanation;
+        document.getElementById('explanation-box').style.display = 'block';
+        document.getElementById('detailed-box').innerText = '📝 Detailed Explanation: ' + data.detailed;
+        document.getElementById('detailed-box').style.display = 'block';
+      });
+    });
+  }
+
+  function goNext() {
+    sessionStorage.setItem("isMuted", isMuted ? "true" : "false");
+    if (timerId) {
+      clearInterval(timerId);
+      timerId = null;
+    }
+    window.location.href = '/next';
+  }
+
+  function toggleMute() {
+    isMuted = !isMuted;
+    document.getElementById('mute-btn').textContent = isMuted ? "🔇" : "🔊";
+    soundCorrect.muted = isMuted;
+    soundWrong.muted = isMuted;
+  }
+
+  function askAI() {
+    const q = document.getElementById("question").innerText;
+    navigator.clipboard.writeText(q).then(() => {
+      alert("✔️ تم نسخ السؤال! سيتم فتح ChatGPT الآن.");
+      window.open("https://chat.openai.com/", "_blank");
+    });
+  }
+
+  window.onload = () => {
+    isMuted = sessionStorage.getItem("isMuted") === "true";
+    document.getElementById('mute-btn').textContent = isMuted ? "🔇" : "🔊";
+    const savedTime = parseInt(localStorage.getItem("quizTime"));
+    if (savedTime) {
+      document.querySelectorAll(".timer-controls button").forEach(btn => {
+        if (btn.innerText.endsWith("h") && parseInt(btn.innerText) * 3600 === savedTime) {
+          btn.classList.add("active-time-btn");
+        }
+      });
+    }
+    startTimer();
+  };
+</script>
+</body>
+</html>

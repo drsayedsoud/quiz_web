@@ -1,0 +1,383 @@
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Prometric Dent - الصفحة الرئيسية</title>
+  <style>
+    html { font-size: 16px; }
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', sans-serif;
+      background-image: url('{{ url_for("static", filename="home_pic.png") }}');
+      background-size: cover;
+      background-position: center;
+      background-attachment: fixed;
+      background-repeat: no-repeat;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      color: #fff;
+    }
+
+    .top-left-title {
+      position: absolute;
+      top: 20px;
+      left: 20px;
+      background-color: rgba(0,0,0,0.5);
+      padding: 10px;
+      border-radius: 10px;
+      z-index: 10;
+      text-align: left;
+    }
+
+    .arabic-title {
+      font-size: 1rem;
+      font-weight: 400;
+      margin: 0;
+    }
+
+    .english-title {
+      font-size: 2rem;
+      font-weight: bold;
+      margin: 0;
+      text-shadow: 2px 2px 6px rgba(0,0,0,0.6);
+    }
+
+    .header {
+      margin-top: 150px;
+      text-align: center;
+      width: 100%;
+    }
+
+    .enter-exam {
+      background-color: #2e7d32;
+      color: white;
+      border-radius: 12px;
+      padding: 12px 25px;
+      font-size: 18px;
+      font-weight: bold;
+      margin: 20px auto;
+      cursor: pointer;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+      transition: background-color 0.3s ease;
+      border: none;
+      display: inline-block;
+    }
+
+    .enter-exam:hover {
+      background-color: #388e3c;
+    }
+
+    .subjects {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      margin: 15px 0 10px;
+      gap: 8px;
+      width: 90%;
+      max-width: 400px;
+    }
+
+    .card {
+      background-color: rgba(255, 255, 255, 0.15);
+      color: #FFFFFF;
+      text-shadow: 1px 1px 3px rgba(0,0,0,0.6);
+      border-radius: 10px;
+      padding: 10px 20px;
+      width: 80%;
+      text-align: center;
+      font-weight: bold;
+      cursor: pointer;
+      box-shadow: 0 3px 8px rgba(0, 0, 0, 0.4);
+      transition: all 0.3s ease;
+      user-select: none;
+    }
+
+    .card:hover {
+      background-color: rgba(255, 255, 255, 0.2);
+      transform: translateY(-2px);
+    }
+
+    @media (max-width: 768px) {
+      html { font-size: 14px; }
+      .card, .enter-exam { font-size: 0.95rem; padding: 10px; }
+      .english-title { font-size: 1.3rem; }
+      .arabic-title { font-size: 0.9rem; }
+    }
+
+    @media (max-width: 480px) {
+      html { font-size: 13px; }
+      .card { padding: 8px 12px; }
+      .english-title { font-size: 1.1rem; }
+      .arabic-title { font-size: 0.8rem; }
+    }
+
+    a#vip-settings {
+      position: absolute;
+      top: 20px;
+      right: 20px;
+      font-size: 26px;
+      color: #ffffff;
+      text-decoration: none;
+      z-index: 20;
+    }
+
+    .top-right-links {
+      position: absolute;
+      top: 60px;
+      right: 20px;
+      text-align: right;
+      z-index: 20;
+    }
+
+    .top-right-links a {
+      display: block;
+      color: #ffffff;
+      font-size: 16px;
+      font-weight: bold;
+      margin-bottom: 6px;
+      text-decoration: none;
+    }
+
+    .top-right-links a:hover {
+      text-decoration: underline;
+    }
+
+    .hidden-cards {
+      opacity: 0;
+      transform: translateX(-30px);
+      transition: opacity 0.4s ease, transform 0.4s ease;
+      pointer-events: none;
+      max-height: 0;
+      overflow: hidden;
+      flex-direction: column;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .hidden-cards.visible {
+      opacity: 1;
+      transform: translateX(0);
+      pointer-events: auto;
+      max-height: 200px;
+      display: flex;
+    }
+
+    .small-card {
+      background-color: #1e1e1e;
+      border-radius: 10px;
+      padding: 12px;
+      text-align: center;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.6);
+      margin: 8px 0;
+    }
+
+    .small-card button {
+      background-color: #0d47a1;
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      font-size: 16px;
+      border-radius: 8px;
+      cursor: pointer;
+    }
+
+    .small-card button:hover {
+      background-color: #1565c0;
+    }
+  </style>
+
+  <!-- أصوات -->
+  <audio id="hover-main" src="{{ url_for('static', filename='hover_main.mp3') }}"></audio>
+  <audio id="subject-sound" src="{{ url_for('static', filename='subject_sound.mp3') }}"></audio>
+  <audio id="exam-sound" src="{{ url_for('static', filename='exam_sound.mp3') }}"></audio>
+
+</head>
+<body>
+
+  <a id="vip-settings" href="/vip_login" title="إعدادات VIP">⚙️</a>
+
+  <div class="top-right-links">
+    <a href="/about">من نحن</a>
+    <a href="/privacy">سياسة الخصوصية</a>
+
+    <form action="{{ url_for('logout') }}" method="GET" style="margin-top:10px;">
+      <button type="submit"
+        style="
+          width: 100%;
+          background-color: #b71c1c;
+          color: white;
+          border: none;
+          border-radius: 6px;
+          padding: 6px 0;
+          font-size: 14px;
+          cursor: pointer;
+          box-shadow: 0 2px 6px rgba(0,0,0,0.3);
+          text-align: center;
+        ">
+        تسجيل خروج
+      </button>
+    </form>
+  </div>
+
+  <div class="top-left-title">
+    <p class="arabic-title">مرحباً بكم في</p>
+    <p class="english-title">Prometric (Dent Said)</p>
+    <div style="font-size: 14px; margin-top: 6px; padding-bottom: 4px;">
+      {{ session.get('global_question_counter', 0) }}<br>
+      <span style="font-size: 12px;">/ {{ total_questions }}</span>
+    </div>
+  </div>
+
+  <div class="header">
+    <form action="{{ url_for('start_session') }}" method="POST" style="display:inline;">
+      <input type="hidden" name="start_choice" value="new" />
+      <button type="submit" class="enter-exam">🧪 ادخل اختبار الآن</button>
+    </form>
+  </div>
+
+  <div class="subjects" id="subject-cards">
+    {% for subject in ['Endodontic', 'Operative', 'Oral Surgery', 'Periodontic',
+                       'Fixed Prosthodontic', 'Pedodontic', 'Orthodontic',
+                       'Pathology', 'Radiology', 'Removable Prosthodontic', 'Oral Medicine'] %}
+      <div class="card" onclick="showOptions('{{ subject }}')">{{ subject }}</div>
+    {% endfor %}
+  </div>
+
+  <script>
+    const subjectLinks = {
+      "Endodontic": "https://www.dentiscope.org/_files/ugd/66484b_13de14e0ee1245d098407d33277bd911.pdf",
+      "Operative": "https://www.dentiscope.org/_files/ugd/66484b_9e2d2cf919784f7f98ef5be74cce9275.pdf",
+      "Oral Surgery": "https://www.dentiscope.org/_files/ugd/66484b_5c326d7e426b4654a9efa77f7d1afe9b.pdf",
+      "Periodontic": "https://www.dentiscope.org/_files/ugd/66484b_7d8dd69cda6d4aa1a269fc466373e171.pdf",
+      "Fixed Prosthodontic": "https://www.dentiscope.org/_files/ugd/66484b_dfd43c22780649b1a7065b98d9a22619.pdf",
+      "Pedodontic": "https://www.dentiscope.org/_files/ugd/66484b_2394fa6e184449b5ab9ea531277299c8.pdf",
+      "Orthodontic": "https://www.dentiscope.org/_files/ugd/66484b_81a9da40864943fa96d25db2de3a5e1f.pdf",
+      "Pathology": "https://www.dentiscope.org/_files/ugd/66484b_7715d7b654904f6e897cd98d52578ea6.pdf",
+      "Radiology": "https://www.dentiscope.org/_files/ugd/66484b_f068e2f0268848d3a0c36cf9566ad3f2.pdf",
+      "Removable Prosthodontic": "https://www.dentiscope.org/_files/ugd/66484b_e90c5fcf18eb4709aad84faade7e29dc.pdf",
+      "Oral Medicine": "https://www.dentiscope.org/_files/ugd/66484b_128003f99a6a4f29b33cddb345bc9c59.pdf"
+    };
+
+    // صوت للكروت الكبيرة
+    const hoverMainAudio = document.getElementById('hover-main');
+    // صوت للكروت الصغيرة
+    const subjectSoundAudio = document.getElementById('subject-sound');
+    // صوت لزر الامتحان
+    const examSoundAudio = document.getElementById('exam-sound');
+
+    // تشغيل صوت الكروت الكبيرة عند التحويم (hover)
+    document.querySelectorAll('.card').forEach(card => {
+      card.addEventListener('mouseenter', () => {
+        try {
+          hoverMainAudio.currentTime = 0;
+          hoverMainAudio.play();
+        } catch(e) {}
+      });
+    });
+
+    function showOptions(subject) {
+      const existing = document.querySelector(`[data-popup='${subject}']`);
+      if (existing) {
+        existing.remove();
+        return;
+      }
+      document.querySelectorAll('[data-popup]').forEach(el => el.remove());
+
+      const container = document.createElement("div");
+      container.className = "hidden-cards visible";
+      container.setAttribute("data-popup", subject);
+
+      container.innerHTML = `
+        <div class="small-card">
+          <a href="${subjectLinks[subject]}" target="_blank">
+            <button>📖 ذاكر مادة ${subject}</button>
+          </a>
+        </div>
+        <div class="small-card">
+          <form action="/start_session" method="POST">
+            <input type="hidden" name="start_choice" value="${subject}">
+            <button type="submit" id="exam-btn-${subject}">📝 اختبار في ${subject}</button>
+          </form>
+        </div>`;
+
+      const subjectCards = document.getElementById("subject-cards");
+      const cards = subjectCards.getElementsByClassName("card");
+      for (let el of cards) {
+        if (el.innerText.trim() === subject) {
+          el.parentNode.insertBefore(container, el.nextSibling);
+          break;
+        }
+      }
+
+      // أضف صوت عند التحويم على كروت المواد الصغيرة
+      container.querySelectorAll('.small-card button').forEach(btn => {
+        btn.addEventListener('mouseenter', () => {
+          try {
+            subjectSoundAudio.currentTime = 0;
+            subjectSoundAudio.play();
+          } catch(e) {}
+        });
+      });
+
+      // أضف صوت عند الضغط على زر الاختبار
+      const examBtn = document.getElementById(`exam-btn-${subject}`);
+      examBtn.addEventListener('click', () => {
+        try {
+          examSoundAudio.currentTime = 0;
+          examSoundAudio.play();
+        } catch(e) {}
+      });
+    }
+
+  </script>
+
+  <style>
+    .hidden-cards {
+      opacity: 0;
+      transform: translateX(-30px);
+      transition: opacity 0.4s ease, transform 0.4s ease;
+      pointer-events: none;
+      max-height: 0;
+      overflow: hidden;
+      flex-direction: column;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .hidden-cards.visible {
+      opacity: 1;
+      transform: translateX(0);
+      pointer-events: auto;
+      max-height: 200px;
+      display: flex;
+    }
+
+    .small-card {
+      background-color: #1e1e1e;
+      border-radius: 10px;
+      padding: 12px;
+      text-align: center;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.6);
+      margin: 8px 0;
+    }
+
+    .small-card button {
+      background-color: #0d47a1;
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      font-size: 16px;
+      border-radius: 8px;
+      cursor: pointer;
+    }
+
+    .small-card button:hover {
+      background-color: #1565c0;
+    }
+  </style>
+
+</body>
+</html>

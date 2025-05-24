@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>تم حفظ الجلسة</title>
+  <style>
+    body {
+      font-family: 'Cairo', sans-serif;
+      text-align: center;
+      padding: 40px 20px;
+      direction: rtl;
+      background-color: #121212;
+      color: #e0e0e0;
+      margin: 0;
+    }
+
+    h1 {
+      font-size: 28px;
+      color: #4caf50;
+      margin-bottom: 20px;
+    }
+
+    p {
+      font-size: 18px;
+      margin: 8px 0;
+      color: #cfcfcf;
+    }
+
+    .motiv {
+      margin-top: 25px;
+      font-size: 20px;
+      font-weight: bold;
+      color: #90caf9;
+    }
+
+    a {
+      display: inline-block;
+      margin-top: 30px;
+      padding: 12px 24px;
+      background-color: #1e88e5;
+      color: white;
+      text-decoration: none;
+      border-radius: 10px;
+      font-size: 18px;
+      transition: background-color 0.3s ease;
+    }
+
+    a:hover {
+      background-color: #1565c0;
+    }
+
+    /* Responsive for small devices */
+    @media (max-width: 600px) {
+      h1 {
+        font-size: 24px;
+      }
+
+      p, .motiv, a {
+        font-size: 16px;
+      }
+
+      a {
+        padding: 10px 20px;
+      }
+    }
+    /* رسم بياني */
+    #sessionsChart {
+      background: #21252b;
+      border-radius: 18px;
+      margin: 34px auto 0;
+      max-width: 430px;
+      width: 100%;
+      box-shadow: 0 6px 24px #0005;
+      padding: 10px 0 12px;
+      display: block;
+    }
+    @media (max-width: 600px) {
+      #sessionsChart {
+        max-width: 99vw;
+        padding: 3px 0 8px;
+      }
+    }
+  </style>
+  <!-- مكتبة الرسم Chart.js -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+  <h1>✅ تم حفظ الجلسة!</h1>
+  <p>توقفت عند السؤال رقم {{ current_index }}.</p>
+  <p>عدد الأسئلة التي تم حلها: {{ attempted }}</p>
+  <p>عدد الإجابات الصحيحة: {{ score }}</p>
+  <p>النسبة المئوية: {{ "%.1f"|format(percentage) }}%</p>
+
+  <div class="motiv">
+    {% if percentage >= 90 %}
+      ممتاز! استمر في هذا الأداء الرائع 💪
+    {% elif percentage >= 70 %}
+      أداء جيد جدًا! اقتربت من التميز 👏
+    {% elif percentage >= 50 %}
+      لستَ بعيدًا عن الأفضل! واصل المذاكرة ✨
+    {% else %}
+      لا تيأس، البداية دائمًا صعبة! واصل التدريب 🚀
+    {% endif %}
+  </div>
+
+  <!-- رسم بياني لتقدم المستخدم في الجلسات السابقة -->
+  {% if user_sessions and user_sessions|length > 1 %}
+    <h2 style="margin-top:34px; color:#4caf50; font-size:21px;">تقدمك في الجلسات السابقة</h2>
+    <canvas id="sessionsChart" height="210"></canvas>
+  {% endif %}
+
+  <a href="{{ url_for('start') }}">الرجوع للرئيسية</a>
+
+  <!-- جافاسكريبت لرسم البياني -->
+  {% if user_sessions and user_sessions|length > 1 %}
+  <script>
+    // بيانات الجلسات من بايثون (Flask)
+    const sessionData = {{ user_sessions | tojson }};
+    const labels = sessionData.map(x => x.date);
+    const data = sessionData.map(x => x.score);
+
+    const ctx = document.getElementById('sessionsChart').getContext('2d');
+    new Chart(ctx, {
+      type: 'line',
+      data: {
+        labels: labels,
+        datasets: [{
+          label: 'عدد الإجابات الصحيحة في كل جلسة',
+          data: data,
+          backgroundColor: '#4caf50',
+          borderColor: '#2196f3',
+          fill: true,
+          tension: 0.23,
+          pointRadius: 5,
+          pointBackgroundColor: '#4caf50',
+        }]
+      },
+      options: {
+        plugins: {
+          legend: { display: true, position: 'bottom' },
+          title: { display: false }
+        },
+        scales: {
+          x: { title: { display: true, text: "تاريخ الجلسة" }, grid: { color: "#31363a" } },
+          y: { title: { display: true, text: "عدد الإجابات الصحيحة" }, grid: { color: "#31363a" }, beginAtZero: true }
+        }
+      }
+    });
+  </script>
+  {% endif %}
+</body>
+</html>

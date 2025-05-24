@@ -1,0 +1,13 @@
+{
+  "type": "service_account",
+  "project_id": "dental-world-dde59",
+  "private_key_id": "cb4421544a45977ff6a22f080eb0a774d8c5ecf4",
+  "private_key": "-----BEGIN PRIVATE KEY-----\nMIIEvAIBADANBgkqhkiG9w0BAQEFAASCBKYwggSiAgEAAoIBAQCjaw1pobV8f+XE\nf1SnaQuZZ4BgFSDUGO0LO4p67GurL4iXVn4WpnKWZLJ8JK5gNb6qiwZlE3TYRx7z\nbDLlZKKzd8dU1YQUXhIkZbn3jH5stvvFYK9n2Ys5/4J/SkgRxYRCHxlGZapqQJqZ\nuk9dssumWkbhr803nz6Oe/1QP2VHhBiXq2TYZdCqXRpZTis7bb8ig+iTz9Hpy8og\nPlmb4WL6gIJYVDYzcwsUUnyK5wliSTOFp4AXSDFrtZQWuxnAyxNng1RcQuG2FpMF\nuUqS0Ej5yzYXptxt5UmhbMUzwlyMFBROeIdiXFil9kGqxK91wLq6pmGHnJMvAZ/e\nbrkbMhNXAgMBAAECggEACH/KWEqVRk7ek9wtenF/rXBRIG4o4W8UcQedOaxvIx2b\nRIe2khYBEqpVEBjWSuGws2z8nagn5RG53d4sPXsA7UWXA+YA8xA7cFIsHGBduOjB\nanAPX17Um2UbE+S4n9f+e3PjnCIwfUsz3zft5cklR1cdpaI/kZuCJOX09EX/zfrO\n+UsIsmiFncduOStngxk3pV2nVOpqz6obR/n9sZsKyVeOkM3wGoG6nCkXASQK08OY\nVVxAC2UESd0H5PLKz9Sl8J9SYefPfCvpor7abmZVSm0Zo8qkoOQyuHvPco88iN5U\n5BdEAq5+r9tLK94Tsdd61Hk4aGJc4SD5ut8Nfo9tvQKBgQDcKGlo8MYg8U5g63uI\nzYhR9/j5Vx7AzvYHAu1X1vzUGhWV02N2EooAh+RCZ/sNC85lPLTtLPyeKRbfYgT+\nTQ2/6VcX5dUQW2wWgxY0yWyaq6dDiiRL/aWBIk9BHW0cGRWcKKEK98gQg4DN/7CF\n7wxyomv1YBkWw6ig6LGtDvMg4wKBgQC+BeIJUMs1bVjHbcaQ94Ln9XUjix8ePgdM\ng+3HVEDL+/5TudCmQjHsU5j83q8m5m1Hgow/piGwj4rbw0SaHBfr8D1cLY+y7/wt\n0xOn/+8tNyqDqpes03pIWfkOl9cQ5iRg6IFxrhl0iJraSfwy2HHDFbVXyuy6Tr42\nXMNdt66R/QKBgF5HTAStfxsiWv80OH24DpWTjGIyha/psQAFp+AC59hopy+3C5PH\nkqNxjjVF1AOdN7Cw04XxyuhsDihxEFRaaPXzFeHdAWX00I+/aSYHz+NYeNN6d9q2\n70YijDAFSvFKaK+r0nMg8uLnfaQ5x71DRmBc38B/e579ANyPaW8DxOgjAoGAAQ1x\nShHrfjlD0571CZqFXBmM84xyuK0pRzA34fHChh64MuiFklYthpyT7VqiZ7nBAzNi\n6XtXFm5FG6CCQcREEad7/4W1FQ2lPO+9XSHaxkpW7vHD804ckEgHTCBlLY/Ixcyj\n4uhO9clH6kucnP976dO19G2IUCPdg9mRr3Q0AFUCgYB2Zw4zvbXO7KnGzXCWcu69\n2hHdQqw4aQdIecKFykX4dkSDl7EqG14G3BeGjGY2v1j/CAWdoZqqsFNP7C9caNVf\n+iUmbkn7nIRf6oAcIhZKKdXelngWFpgsewLcslAd0NUp9RQ6E1KB3SfqEuTB/w2b\neknHysa4TZkwyySC2W0JOg==\n-----END PRIVATE KEY-----\n",
+  "client_email": "dental-quiz@dental-world-dde59.iam.gserviceaccount.com",
+  "client_id": "103588128507947137642",
+  "auth_uri": "https://accounts.google.com/o/oauth2/auth",
+  "token_uri": "https://oauth2.googleapis.com/token",
+  "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
+  "client_x509_cert_url": "https://www.googleapis.com/robot/v1/metadata/x509/dental-quiz%40dental-world-dde59.iam.gserviceaccount.com",
+  "universe_domain": "googleapis.com"
+}
