@@ -1,8 +1,129 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ar">
 <head>
   <meta charset="UTF-8">
-  <title>Sign Up</title>
+  <title>إنشاء حساب جديد | Prometric Dent</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: 'Cairo', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(135deg, #151c26 70%, #1a237e 100%);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #fff;
+    }
+
+    .signup-container {
+      background-color: #222b36ee;
+      box-shadow: 0 8px 28px #0008;
+      border-radius: 16px;
+      padding: 38px 24px 32px 24px;
+      width: 94%;
+      max-width: 400px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      position: relative;
+    }
+
+    h2 {
+      margin-bottom: 26px;
+      font-size: 2rem;
+      letter-spacing: 1px;
+      color: #00e676;
+    }
+
+    label {
+      display: block;
+      width: 100%;
+      text-align: right;
+      margin-bottom: 3px;
+      color: #bbdefb;
+      font-size: 15px;
+    }
+
+    input[type="email"], input[type="password"] {
+      width: 100%;
+      padding: 13px 12px;
+      margin-bottom: 18px;
+      border: none;
+      border-radius: 8px;
+      background: #111822;
+      color: #fff;
+      font-size: 16px;
+      transition: box-shadow 0.2s;
+      box-shadow: 0 2px 8px #0002 inset;
+    }
+
+    input[type="email"]:focus, input[type="password"]:focus {
+      outline: none;
+      box-shadow: 0 0 7px 2px #00bcd4;
+      background: #181e26;
+    }
+
+    button {
+      width: 100%;
+      padding: 13px 0;
+      background: linear-gradient(90deg, #43a047 80%, #1976d2 100%);
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      font-size: 18px;
+      font-weight: bold;
+      cursor: pointer;
+      margin-top: 10px;
+      transition: background 0.18s;
+      letter-spacing: 1px;
+      box-shadow: 0 3px 10px #0003;
+    }
+
+    button:hover {
+      background: linear-gradient(90deg, #388e3c 60%, #13539e 100%);
+    }
+
+    .link {
+      margin-top: 20px;
+      color: #90caf9;
+      text-decoration: none;
+      font-size: 15px;
+      display: block;
+      text-align: center;
+      transition: color 0.2s;
+    }
+    .link:hover {
+      text-decoration: underline;
+      color: #fff;
+    }
+
+    .errormsg, .successmsg {
+      margin-bottom: 13px;
+      color: #ff7070;
+      background: #1a212a99;
+      padding: 8px;
+      border-radius: 6px;
+      font-size: 15px;
+      display: none;
+      width: 100%;
+      text-align: center;
+    }
+    .successmsg {
+      color: #43a047;
+      background: #14311a99;
+    }
+
+    @media (max-width: 600px) {
+      .signup-container {
+        padding: 22px 6px 15px 6px;
+      }
+      h2 { font-size: 1.2rem; }
+    }
+  </style>
+
+  <!-- Firebase Auth JS -->
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-app.js";
     import { getAuth, createUserWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-auth.js";
@@ -21,25 +142,51 @@
     const auth = getAuth(app);
 
     window.signup = function () {
-      const email = document.getElementById("email").value;
-      const password = document.getElementById("password").value;
+      const email = document.getElementById("email").value.trim();
+      const password = document.getElementById("password").value.trim();
+      const errorDiv = document.getElementById("error");
+      const successDiv = document.getElementById("success");
+      errorDiv.style.display = "none";
+      successDiv.style.display = "none";
+
+      if (!email || !password) {
+        errorDiv.textContent = "يرجى إدخال البريد وكلمة المرور.";
+        errorDiv.style.display = "block";
+        return;
+      }
+      if (password.length < 6) {
+        errorDiv.textContent = "كلمة المرور يجب أن تكون 6 أحرف على الأقل.";
+        errorDiv.style.display = "block";
+        return;
+      }
 
       createUserWithEmailAndPassword(auth, email, password)
         .then(() => {
-          alert("Account created. You can now log in.");
-          window.location.href = "/login";
+          successDiv.textContent = "تم إنشاء الحساب بنجاح! يمكنك تسجيل الدخول الآن.";
+          successDiv.style.display = "block";
+          setTimeout(() => { window.location.href = "/login"; }, 1200);
         })
         .catch((error) => {
-          alert("Sign-up failed: " + error.message);
+          let msg = "حدث خطأ، حاول لاحقًا.";
+          if (error.code === "auth/email-already-in-use") msg = "هذا البريد مستخدم بالفعل.";
+          if (error.code === "auth/invalid-email") msg = "البريد الإلكتروني غير صالح.";
+          errorDiv.textContent = msg;
+          errorDiv.style.display = "block";
         });
     };
   </script>
 </head>
 <body>
-  <h2>Sign Up</h2>
-  <input type="email" id="email" placeholder="Email"><br><br>
-  <input type="password" id="password" placeholder="Password"><br><br>
-  <button onclick="signup()">Create Account</button><br><br>
-  <a href="/login">Already have an account? Login</a>
+  <div class="signup-container">
+    <h2>إنشاء حساب جديد</h2>
+    <div id="error" class="errormsg"></div>
+    <div id="success" class="successmsg"></div>
+    <label for="email">البريد الإلكتروني</label>
+    <input type="email" id="email" placeholder="أدخل بريدك الإلكتروني" required autocomplete="email" />
+    <label for="password">كلمة المرور</label>
+    <input type="password" id="password" placeholder="أدخل كلمة المرور" required minlength="6" autocomplete="new-password" />
+    <button onclick="signup()">إنشاء حساب</button>
+    <a class="link" href="/login">لديك حساب؟ تسجيل الدخول</a>
+  </div>
 </body>
 </html>
