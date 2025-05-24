@@ -19,6 +19,25 @@
       flex-direction: column;
       align-items: center;
       color: #fff;
+      position: relative;
+    }
+    /* تغميق الخلفية */
+    body::before {
+      content: '';
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      width: 100vw; height: 100vh;
+      background: rgba(0,0,0,0.56); /* زوّد الشفافية للضعف */
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .top-left-title,
+    .header,
+    .subjects,
+    .top-right-links {
+      position: relative;
+      z-index: 2;
     }
 
     .top-left-title {
@@ -39,7 +58,7 @@
     }
 
     .english-title {
-      font-size: 2.7rem; /* أكبر من السابق */
+      font-size: 2.7rem;
       font-weight: bold;
       margin: 0;
       text-shadow: 2px 2px 6px rgba(0,0,0,0.6);
@@ -82,8 +101,8 @@
 
     .card {
       background-color: rgba(255, 255, 255, 0.15);
-      color:rgb(11, 64, 238);
-      text-shadow: 1px 1px 3px rgba(0,0,0,0.6);
+      color: #fff; /* خط أبيض */
+      text-shadow: 1px 1px 4px rgba(0,0,0,0.4);
       border-radius: 10px;
       padding: 10px 20px;
       width: 80%;
@@ -96,7 +115,7 @@
     }
 
     .card:hover {
-      background-color: rgba(255, 255, 255, 0.2);
+      background-color: rgba(255, 255, 255, 0.22);
       transform: translateY(-2px);
     }
 
@@ -135,7 +154,7 @@
     .top-right-links a {
       display: block;
       color: #ffffff;
-      font-size: 12px;    /* أصغر */
+      font-size: 12px;
       font-weight: bold;
       margin-bottom: 5px;
       text-decoration: none;
@@ -204,6 +223,7 @@
       background-color: #1565c0;
     }
   </style>
+  <!-- ... باقي الصفحة كما هي ... -->
 
   <!-- أصوات -->
   <audio id="hover-main" src="{{ url_for('static', filename='hover_main.mp3') }}"></audio>
@@ -382,6 +402,36 @@
       background-color: #1565c0;
     }
   </style>
+  <script>
+let wakeLock = null;
+
+async function requestWakeLock() {
+  try {
+    if ('wakeLock' in navigator) {
+      wakeLock = await navigator.wakeLock.request('screen');
+      // أعد طلب Wake Lock إذا فقد بسبب تغيّر التبويب أو فقد الاتصال المؤقت
+      wakeLock.addEventListener('release', () => {
+        console.log('Wake Lock was released');
+      });
+      console.log('Wake Lock is active!');
+    } else {
+      console.log("Wake Lock API not supported in this browser.");
+    }
+  } catch (err) {
+    console.error(`${err.name}, ${err.message}`);
+  }
+}
+
+// أطلب الـ wake lock عند تحميل الصفحة
+window.addEventListener('load', requestWakeLock);
+
+// لو رجع المستخدم للصفحة بعد الخروج منها (Visibility change)
+document.addEventListener('visibilitychange', () => {
+  if (wakeLock !== null && document.visibilityState === 'visible') {
+    requestWakeLock();
+  }
+});
+</script>
 
 </body>
 </html>

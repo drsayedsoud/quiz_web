@@ -381,5 +381,36 @@
     startTimer();
   };
 </script>
+<script>
+let wakeLock = null;
+
+async function requestWakeLock() {
+  try {
+    if ('wakeLock' in navigator) {
+      wakeLock = await navigator.wakeLock.request('screen');
+      // أعد طلب Wake Lock إذا فقد بسبب تغيّر التبويب أو فقد الاتصال المؤقت
+      wakeLock.addEventListener('release', () => {
+        console.log('Wake Lock was released');
+      });
+      console.log('Wake Lock is active!');
+    } else {
+      console.log("Wake Lock API not supported in this browser.");
+    }
+  } catch (err) {
+    console.error(`${err.name}, ${err.message}`);
+  }
+}
+
+// أطلب الـ wake lock عند تحميل الصفحة
+window.addEventListener('load', requestWakeLock);
+
+// لو رجع المستخدم للصفحة بعد الخروج منها (Visibility change)
+document.addEventListener('visibilitychange', () => {
+  if (wakeLock !== null && document.visibilityState === 'visible') {
+    requestWakeLock();
+  }
+});
+</script>
+
 </body>
 </html>
