@@ -9,208 +9,233 @@
       background: #121212;
       color: #fff;
       font-family: 'Segoe UI', sans-serif;
-      padding: 0;
       margin: 0;
-      display: flex;
-      flex-direction: column;
       min-height: 100vh;
+      direction: rtl;
     }
     .container {
-      width: 100%;
-      max-width: 650px;
+      max-width: 800px;
       margin: 0 auto;
-      padding: 24px 10px 60px 10px;
-      box-sizing: border-box;
+      padding: 24px 8px 36px 8px;
       display: flex;
       flex-direction: column;
-      align-items: center;
+      gap: 24px;
     }
     .sidebar, .main-content {
-      width: 100%;
-      margin-bottom: 30px;
+      border-radius: 16px;
+      box-shadow: 0 2px 14px rgba(0,0,0,0.13);
+      margin-bottom: 0;
     }
     .sidebar {
       background: #1e1e1e;
-      padding: 18px 15px 25px 15px;
-      border-radius: 14px;
-      box-shadow: 0 2px 12px rgba(0,0,0,0.18);
-      margin-bottom: 28px;
+      padding: 17px 12px;
     }
     .sidebar h3 {
-      margin-bottom: 15px;
       color: #4caf50;
-      font-size: 22px;
+      font-size: 18px;
+      margin: 0 0 10px 0;
+      text-align: center;
     }
-    .sidebar p {
-      margin: 8px 0;
-      font-size: 14px;
-      border-bottom: 1px solid #333;
-      padding-bottom: 5px;
+    .sidebar-list {
+      max-height: 120px;
+      overflow-y: auto;
+      background: #171819;
+      border-radius: 7px;
+      padding: 7px 4px;
+      margin-top: 7px;
+      font-size: 13.5px;
+    }
+    .sidebar-list p {
+      margin: 0 0 7px 0;
+      border-bottom: 1px solid #232323;
+      padding-bottom: 4px;
       direction: ltr;
       word-break: break-all;
+      font-size: 13.5px;
     }
-    .main-content h2 {
-      margin-bottom: 30px;
-      color: #4caf50;
-      font-size: 28px;
-      text-align: center;
-    }
-    .stats {
-      display: flex;
-      justify-content: center;
-      gap: 20px;
-      margin-bottom: 35px;
-      flex-wrap: wrap;
-      width: 100%;
-    }
-    .stat-box {
-      background: #222;
-      padding: 17px 20px;
-      border-radius: 12px;
-      min-width: 130px;
-      box-shadow: 0 0 10px rgba(0,0,0,0.13);
-      text-align: center;
-    }
-    .stat-box h3 {
-      margin: 0 0 5px 0;
-      font-size: 20px;
-      color: #90caf9;
-    }
-    .stat-box p {
-      margin: 0;
-      font-size: 18px;
-      font-weight: bold;
-    }
-    form {
-      margin-top: 20px;
-    }
+    .sidebar-list p:last-child { border-bottom: none; }
+    form { margin: 0; }
     input[type=email] {
-      padding: 10px;
+      padding: 9px 7px;
       width: 100%;
       border-radius: 8px;
       border: none;
-      font-size: 16px;
+      font-size: 15px;
       margin-bottom: 8px;
       background: #232323;
       color: #fff;
       box-sizing: border-box;
       direction: ltr;
+      outline: none;
+      transition: box-shadow 0.2s;
     }
-    button {
-      padding: 10px 20px;
-      font-size: 16px;
+    input[type=email]:focus {
+      box-shadow: 0 0 0 2px #4caf5060;
+    }
+    button, .main-content a {
+      padding: 9px 17px;
+      font-size: 15px;
       border: none;
       border-radius: 8px;
       background-color: #4caf50;
       color: white;
       cursor: pointer;
-      margin-top: 7px;
-      transition: background 0.3s;
+      font-weight: bold;
+      transition: background 0.2s;
+      text-decoration: none;
+      margin-top: 4px;
+      display: inline-block;
     }
-    button[type=submit]:hover {
+    button[type=submit]:hover, .main-content a:hover {
       background-color: #388e3c;
     }
-    .vip { color: #4caf50; font-weight: bold; }
-    .non-vip { color: #f44336; font-weight: bold; }
+    .main-content {
+      background: #19191a;
+      padding: 22px 7px 24px 7px;
+    }
+    .main-content h2 {
+      color: #4caf50;
+      font-size: 23px;
+      margin-bottom: 16px;
+      text-align: center;
+    }
+    .stats {
+      display: flex;
+      gap: 17px;
+      justify-content: center;
+      flex-wrap: wrap;
+      margin-bottom: 16px;
+      width: 100%;
+    }
+    .stat-box {
+      background: #232323;
+      padding: 14px 14px;
+      border-radius: 10px;
+      min-width: 110px;
+      box-shadow: 0 0 8px rgba(0,0,0,0.09);
+      text-align: center;
+      margin-bottom: 4px;
+    }
+    .stat-box h3 {
+      margin: 0 0 5px 0;
+      font-size: 15px;
+      color: #90caf9;
+      font-weight: 400;
+    }
+    .stat-box p {
+      margin: 0;
+      font-size: 16px;
+      font-weight: bold;
+      letter-spacing: 1px;
+    }
+    .vip { color: #4caf50; font-weight: bold; font-size: 18px; }
+    .non-vip { color: #f44336; font-weight: bold; font-size: 18px;}
+    .main-content a {
+      margin-bottom: 14px;
+      margin-top: 0;
+      display: inline-block;
+      font-size: 15px;
+    }
+    .table-responsive {
+      overflow-x: auto;
+      width: 100%;
+      margin-top: 9px;
+    }
     table {
       width: 100%;
       border-collapse: collapse;
-      margin-top: 15px;
       background: #222;
-      border-radius: 13px;
-      overflow: hidden;
-      box-shadow: 0 1px 12px rgba(0,0,0,0.09);
-      font-size: 15px;
+      border-radius: 11px;
+      font-size: 14px;
+      min-width: 430px;
     }
     th, td {
-      padding: 10px 8px;
-      border-bottom: 1px solid #333;
+      padding: 9px 6px;
+      border-bottom: 1px solid #303030;
       text-align: center;
     }
     th {
       background-color: #191a1b;
       color: #90caf9;
-      font-size: 16px;
+      font-size: 14.5px;
+      font-weight: 600;
     }
-    tr:last-child td {
-      border-bottom: none;
+    tr:last-child td { border-bottom: none; }
+    tr:hover { background-color: #252525; }
+    td form button {
+      background-color: #e53935 !important;
+      color: #fff;
+      font-size: 15px;
+      padding: 7px 12px;
+      border-radius: 6px;
+      transition: background 0.2s;
+      margin: 0;
     }
-    tr:hover { background-color: #282828; }
-    .sidebar-list {
-      max-height: 150px;
-      overflow-y: auto;
-      margin-top: 10px;
-      padding-right: 2px;
-    }
+    td form button:hover { background: #b71c1c !important; }
+
+    /* Responsive */
     @media (max-width: 700px) {
       .container {
-        max-width: 100%;
-        padding: 10px 3vw 40px 3vw;
+        max-width: 100vw;
+        padding: 4vw 1vw 26vw 1vw;
+        gap: 13px;
       }
-      .sidebar, .main-content {
-        padding: 10px 7px;
-      }
-      .main-content h2 { font-size: 23px; }
-      .stats { gap: 10px; }
-      .stat-box { min-width: 90px; padding: 13px 10px; font-size: 13px;}
-      table { font-size: 13px; }
+      .main-content { padding: 12px 2vw 16px 2vw;}
+      .sidebar { padding: 11px 3vw;}
+      .stats { gap: 8px;}
+      .stat-box { min-width: 90px; padding: 11px 5px;}
+      .sidebar-list { font-size: 12px; max-height: 90px;}
+      table { font-size: 12.5px;}
+      th, td { padding: 7px 2.5px; }
     }
-    @media (max-width: 480px) {
-      .container {
-        padding: 2px 0 30px 0;
-      }
-      .sidebar, .main-content { padding: 6px 1vw; }
-      .main-content h2 { font-size: 17px; }
-      .stat-box h3, .stat-box p { font-size: 14px; }
-      table { font-size: 12px; }
-      th, td { padding: 8px 3px; }
+    @media (max-width: 500px) {
+      .container { padding: 2vw 0 10vw 0;}
+      .main-content { padding: 6px 1vw 8px 1vw;}
+      .sidebar { padding: 7px 2vw;}
+      .main-content h2 { font-size: 15.5px;}
+      .stat-box h3, .stat-box p { font-size: 12px;}
+      .stat-box { padding: 7px 3px;}
+      table { font-size: 11px; min-width: 380px;}
+      .sidebar-list { font-size: 11px; }
+      th, td { padding: 5px 1.5px;}
+      .stats { flex-direction: column; align-items: stretch; gap: 3px;}
     }
   </style>
 </head>
 <body>
   <div class="container">
-    <!-- صندوق إضافة VIP وقائمة ال VIP -->
+    <!-- صندوق إضافة VIP وقائمة VIP -->
     <div class="sidebar">
-      <form method="POST" action="/add_vip" style="margin-bottom: 16px;">
+      <form method="POST" action="/add_vip" style="margin-bottom: 13px;">
         <h3>➕ إضافة مستخدم VIP</h3>
         <input type="email" name="email" placeholder="البريد الإلكتروني" required />
         <button type="submit">إضافة VIP</button>
       </form>
-      <h3 style="margin-top:8px;">⭐ قائمة إيميلات الـ VIP ({{ vip_emails | length }})</h3>
+      <h3 style="margin-top:6px;">⭐ قائمة إيميلات الـ VIP ({{ vip_emails | length }})</h3>
       <div class="sidebar-list">
         {% for vip in vip_emails %}
           <p>{{ vip }}</p>
         {% endfor %}
       </div>
     </div>
+
     <!-- لوحة التحكم الرئيسية -->
     <div class="main-content">
       <h2>📋 لوحة تحكم VIP</h2>
-
-      <!-- زر العودة -->
-      <div style="text-align: center; margin-bottom: 20px;">
-        <a href="{{ url_for('start') }}" 
-           style="display: inline-block; padding: 10px 20px; background-color: #4caf50; color: white; border-radius: 8px; text-decoration: none; font-weight: bold; transition: background-color 0.3s;">
-          🏠 العودة إلى الصفحة الرئيسية
-        </a>
+      <div style="text-align: center; margin-bottom: 14px;">
+        <a href="{{ url_for('start') }}">🏠 العودة إلى الصفحة الرئيسية</a>
       </div>
-
       <div class="stats">
         <div class="stat-box">
           <h3>عدد المستخدمين</h3>
           <p>{{ total_users }}</p>
         </div>
-        
-        <div class="stats">
-  
-  <div class="stat-box">
-    <h3>المستخدمون النشطون اليوم</h3>
-    <p>{{ active_today }}</p>
-  </div>
-</div>
-
+        <div class="stat-box">
+          <h3>المستخدمون النشطون اليوم</h3>
+          <p>{{ active_today }}</p>
+        </div>
       </div>
-      <div style="overflow-x:auto; width:100%;">
+      <div class="table-responsive">
         <table>
           <tr>
             <th>البريد الإلكتروني</th>
@@ -232,7 +257,7 @@
             <td>
               <form method="POST" action="/delete_user" style="margin:0;">
                 <input type="hidden" name="email" value="{{ user }}">
-                <button type="submit" style="background-color:#e53935;">🗑️</button>
+                <button type="submit" title="حذف المستخدم">🗑️</button>
               </form>
             </td>
           </tr>
