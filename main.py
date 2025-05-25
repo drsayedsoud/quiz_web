@@ -17,7 +17,6 @@ SESSIONS_FILE = "user_sessions.json"
 VIP_USERS_FILE = "vip_users.json"
 
 from functools import wraps
-from flask import session, redirect, url_for
 
 def load_vip_users():
     if os.path.exists(VIP_USERS_FILE):
@@ -531,8 +530,6 @@ def vip_login():
             error_message = "🚫 كلمة مرور خاطئة"
     return render_template('vip_login.html', error_message=error_message)
 
-from datetime import datetime
-
 @app.route('/vip_manager')
 def vip_manager():
     if not session.get('is_admin'):
@@ -559,7 +556,7 @@ def vip_manager():
         over_limit = sum(1 for count in user_counters.values() if count >= 200)
 
     # حساب المستخدمين النشطين اليوم من ملف الجلسات
-    today_str = datetime.now().strftime('%Y-%m-%d')
+    today_str = datetime.datetime.now().strftime('%Y-%m-%d')
     if os.path.exists(SESSIONS_FILE):
         with open(SESSIONS_FILE, "r", encoding="utf-8") as f:
             try:
