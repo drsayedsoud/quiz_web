@@ -84,7 +84,7 @@ subject_start_indexes = {
     "Oral Medicine": 4368
 }
 
-VIP_ADMIN_PASSWORD = "123456789"
+VIP_ADMIN_PASSWORD = "123456"
 
 def encode_email(email):
     return base64.b64encode(email.encode()).decode()
