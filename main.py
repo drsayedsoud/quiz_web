@@ -14,6 +14,36 @@ USER_COUNTER_FILE = "user_counters.json"
 RATINGS_FILE = "ratings.json"
 SERVICE_ACCOUNT_FILE = 'dental-world-dde59-cb4421544a45.json'
 SESSIONS_FILE = "user_sessions.json"
+VIP_USERS_FILE = "vip_users.json"
+
+from functools import wraps
+from flask import session, redirect, url_for
+
+def load_vip_users():
+    if os.path.exists(VIP_USERS_FILE):
+        with open(VIP_USERS_FILE, "r") as f:
+            return json.load(f)
+    else:
+        # قائمة افتراضية إذا الملف مش موجود
+        return {
+            "vip1@example.com": "VIPCODE123",
+            "dentist@clinic.com": "FULLACCESS"
+        }
+
+def save_vip_users(data):
+    with open(VIP_USERS_FILE, "w") as f:
+        json.dump(data, f)
+
+# هُنا يتم تحميل بيانات الـ VIP من الملف
+full_access_users = load_vip_users()
+
+def login_required(f):
+    @wraps(f)
+    def decorated_function(*args, **kwargs):
+        if 'email' not in session:
+            return redirect(url_for('login_page'))
+        return f(*args, **kwargs)
+    return decorated_function
 
 def load_all_questions_from_excel():
     df = pd.read_excel(EXCEL_FILE)
@@ -38,11 +68,6 @@ ratings_lock = threading.Lock()
 SPREADSHEET_ID = '1dGa6lmOLy5a7Kkw3DNDh2uw4aPjOCSP9oA6AmTIbAa8'
 RANGE_NAME = 'Sheet1!A2:K'
 
-full_access_users = {
-    "vip1@example.com": "VIPCODE123",
-    "dentist@clinic.com": "FULLACCESS"
-}
-
 subject_start_indexes = {
     "Endodontic": 2270,
     "Operative": 5013,
@@ -59,7 +84,7 @@ subject_start_indexes = {
     "Oral Medicine": 4368
 }
 
-VIP_ADMIN_PASSWORD = "Drsayedsoud123@@"
+VIP_ADMIN_PASSWORD = "123456789"
 
 def encode_email(email):
     return base64.b64encode(email.encode()).decode()
@@ -215,20 +240,33 @@ def set_email():
     return jsonify({'status': 'ok'})
 
 @app.route('/start')
+@login_required
 def start():
     last_index = session.get('last_index', None)
     total_questions = len(questions)
     email = session.get('email')
+    is_vip = email in full_access_users if email else False
+
     if email:
         session['global_question_counter'] = load_user_counter(email)
     else:
         session['global_question_counter'] = 0
+
     return render_template('start.html',
                            last_index=last_index,
-                           total_questions=total_questions)
+                           total_questions=total_questions,
+                           is_vip=is_vip)
 
 @app.route('/start_session', methods=['POST'])
+@login_required
 def start_session():
+    email = session.get('email')
+    current_count = load_user_counter(email) if email else 0
+    
+    # التحقق مع السماح لـ VIP بتخطي الحد
+    if email and (email not in full_access_users) and current_count >= 100:
+        return redirect(url_for('stop_page'))
+
     choice = request.form.get('start_choice')
     reset_subject_index = request.form.get('reset_subject_index') == 'true'
 
@@ -269,6 +307,7 @@ def start_session():
     return redirect(url_for('quiz'))
 
 @app.route('/quiz')
+@login_required
 def quiz():
     if 'shuffled_indexes' in session:
         indexes = session['shuffled_indexes']
@@ -305,7 +344,22 @@ def quiz():
                            subject=subject)
 
 @app.route('/check', methods=['POST'])
+@login_required
 def check():
+    email = session.get('email')
+
+    if email and email not in full_access_users:
+        current_count = load_user_counter(email)
+        if current_count >= 100:
+            return jsonify({
+                'result': 'limit_reached',
+                'message': '🚫 لقد تجاوزت الحد الأقصى للأسئلة (100 سؤال).',
+                'score': session.get('score', 0),
+                'attempted': session.get('attempted', 0)
+            }), 403
+    else:
+        current_count = load_user_counter(email) if email else 0
+
     data = request.json
     selected = data['selected']
     correct = data['correct']
@@ -319,10 +373,9 @@ def check():
     session['score'] = score
     session['attempted'] = attempted
 
-    email = session.get('email')
     if email:
-        current_count = load_user_counter(email)
         new_count = current_count + 1
+        print(f"[DEBUG] New Count after increment: {new_count}")
         save_user_counter(email, new_count)
         session['global_question_counter'] = new_count
 
@@ -333,12 +386,17 @@ def check():
         'attempted': attempted
     })
 
+@app.route('/stop')
+def stop_page():
+    return render_template('stop.html')
+
 @app.route('/logout')
 def logout():
     session.clear()
     return redirect(url_for('login_page'))
 
 @app.route('/next')
+@login_required
 def next_question():
     if 'shuffled_indexes' in session:
         pos = session.get('current_pos', 0) + 1
@@ -354,6 +412,7 @@ def next_question():
     return redirect(url_for('quiz'))
 
 @app.route('/finish_session', methods=['POST'])
+@login_required
 def finish_session():
     if 'shuffled_indexes' in session:
         pos = session.get('current_pos', 0)
@@ -409,6 +468,7 @@ def explanation(index):
         return jsonify({'explanation': '', 'detailed': ''})
 
 @app.route('/result')
+@login_required
 def result():
     score = session.get('score', 0)
     attempted = session.get('attempted', 0)
@@ -419,6 +479,7 @@ def result():
     return render_template('result.html', score=score, attempted=attempted, percentage=percentage, total=total)
 
 @app.route('/main')
+@login_required
 def main_page():
     return render_template('main.html')
 
@@ -510,6 +571,7 @@ def add_vip():
         return redirect(url_for('vip_login'))
     email = request.form.get('email')
     full_access_users[email] = "FULL"
+    save_vip_users(full_access_users)  # حفظ التعديل في الملف
     return f"<h3 style='color:green; text-align:center;'>✅ تم إضافة {email} كمستخدم VIP</h3><br><a href='/vip_manager'>رجوع</a>"
 
 @app.route('/delete_user', methods=['POST'])

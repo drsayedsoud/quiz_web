@@ -46,7 +46,7 @@
     }
 
     .english-title {
-      font-size: 2.3rem;
+      font-size: 5rem;
       font-weight: bold;
       text-shadow: 2px 2px 6px rgba(0,0,0,0.6);
       margin: 0 0 5px 0;
@@ -81,7 +81,6 @@
       width: 90%;
       max-width: 400px;
       display: block;
-      text-align: center;
     }
     .enter-exam:hover {
       background-color: #388e3c;
@@ -193,7 +192,7 @@
       {{ session.get('global_question_counter', 0) }}<br>
       <span style="font-size: 12px;">/ {{ total_questions }}</span>
     </div>
-    <form action="{{ url_for('start_session') }}" method="POST" style="width:90%; max-width:400px;">
+    <form id="startSessionForm" action="{{ url_for('start_session') }}" method="POST" style="width:90%; max-width:400px;">
       <input type="hidden" name="start_choice" value="new" />
       <button type="submit" class="enter-exam">🧪 ادخل اختبار الآن</button>
     </form>
@@ -326,28 +325,41 @@
     }
   </style>
   <script>
-let wakeLock = null;
-async function requestWakeLock() {
-  try {
-    if ('wakeLock' in navigator) {
-      wakeLock = await navigator.wakeLock.request('screen');
-      wakeLock.addEventListener('release', () => {
-        console.log('Wake Lock was released');
-      });
-      console.log('Wake Lock is active!');
-    } else {
-      console.log("Wake Lock API not supported in this browser.");
-    }
-  } catch (err) {
-    console.error(`${err.name}, ${err.message}`);
-  }
-}
-window.addEventListener('load', requestWakeLock);
-document.addEventListener('visibilitychange', () => {
-  if (wakeLock !== null && document.visibilityState === 'visible') {
-    requestWakeLock();
-  }
-});
+    document.addEventListener('DOMContentLoaded', () => {
+      const maxAllowed = 100;
+      const counterElem = document.querySelector('.question-counter');
+      const counter = parseInt(counterElem ? counterElem.innerText.trim() : "0");
+
+      // الحصول على حالة VIP من الباك إند
+      const isVip = {{ 'true' if is_vip else 'false' }};
+
+      const examBtn = document.querySelector('#startSessionForm button.enter-exam');
+
+      if (!isVip && counter >= maxAllowed) {
+        if (examBtn) {
+          examBtn.disabled = true;
+          examBtn.style.backgroundColor = '#b71c1c';
+          examBtn.title = "لقد تجاوزت الحد الأقصى للأسئلة المجانية";
+          examBtn.addEventListener('click', e => {
+            e.preventDefault();
+            alert("🚫 لقد تجاوزت الحد الأقصى للأسئلة المجانية (100 سؤال).");
+            window.location.href = "{{ url_for('stop_page') }}";
+          });
+        }
+
+        // تعطيل أزرار المواد أيضًا
+        document.querySelectorAll('.small-card form button').forEach(btn => {
+          btn.disabled = true;
+          btn.style.backgroundColor = '#b71c1c';
+          btn.title = "لقد تجاوزت الحد الأقصى للأسئلة المجانية";
+          btn.addEventListener('click', e => {
+            e.preventDefault();
+            alert("🚫 لقد تجاوزت الحد الأقصى للأسئلة المجانية (100 سؤال).");
+            window.location.href = "{{ url_for('stop_page') }}";
+          });
+        });
+      }
+    });
   </script>
 </body>
 </html>
