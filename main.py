@@ -18,7 +18,6 @@ SESSIONS_FILE = "user_sessions.json"
 VIP_USERS_FILE = "vip_users.json"
 
 from functools import wraps
-from flask import session, redirect, url_for
 
 def load_vip_users():
     if os.path.exists(VIP_USERS_FILE):
@@ -37,7 +36,6 @@ def save_vip_users(data):
             save_vip(email, True)
     except Exception as e:
         print("[gsheet] Error save_vip:", e)
-    
     with open(VIP_USERS_FILE, "w") as f:
         json.dump(data, f)
 
@@ -51,6 +49,7 @@ def login_required(f):
             return redirect(url_for('login_page'))
         return f(*args, **kwargs)
     return decorated_function
+
 def is_vip_user(email):
     try:
         if check_vip(email):
@@ -332,7 +331,6 @@ def start_session():
     
     # التحقق مع السماح لـ VIP بتخطي الحد
     if email and (not is_vip_user(email)) and current_count >= 100:
-
         return redirect(url_for('stop_page'))
 
     choice = request.form.get('start_choice')
@@ -607,7 +605,9 @@ def vip_manager():
     user_counters = {}
     total_users = 0
     over_limit = 0
+    active_today_count = 0  # عدد المستخدمين النشطين اليوم
 
+    # تحميل عداد الأسئلة لكل مستخدم
     if os.path.exists(USER_COUNTER_FILE):
         with open(USER_COUNTER_FILE, "r") as f:
             raw_data = json.load(f)
@@ -622,6 +622,18 @@ def vip_manager():
         total_users = len(user_counters)
         over_limit = sum(1 for count in user_counters.values() if count >= 200)
 
+    # حساب المستخدمين النشطين اليوم من ملف الجلسات
+    today_str = datetime.datetime.now().strftime('%Y-%m-%d')
+    if os.path.exists(SESSIONS_FILE):
+        with open(SESSIONS_FILE, "r", encoding="utf-8") as f:
+            try:
+                sessions_data = json.load(f)
+                # مجموعة الإيميلات التي نشطت اليوم
+                active_emails_today = {session['email'] for session in sessions_data if session['date'] == today_str}
+                active_today_count = len(active_emails_today)
+            except:
+                active_today_count = 0
+
     vip_emails = list(full_access_users.keys())
 
     return render_template(
@@ -630,7 +642,8 @@ def vip_manager():
         total_users=total_users,
         over_limit=over_limit,
         full_access_users=full_access_users,
-        vip_emails=vip_emails
+        vip_emails=vip_emails,
+        active_today=active_today_count  # أضفنا هذا المتغير
     )
 
 @app.route('/add_vip', methods=['POST'])
