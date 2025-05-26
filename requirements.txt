@@ -1,6 +1,12 @@
 flask
+google-auth
+google-api-python-client
+pandas
+openpyxl
+flask
 gunicorn
 google-auth
 google-api-python-client
 pandas
 openpyxl
+gspread
