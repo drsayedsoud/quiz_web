@@ -314,34 +314,53 @@
   }, 1000);
 }
 
-  function checkAnswer(el) {
-    if (answered) return;
-    answered = true;
-    clearInterval(timerId);
-    timerId = null;
-    const selected = el.getAttribute('data-choice');
-    fetch('/check', {
-      method: 'POST',
-      headers: {'Content-Type': 'application/json'},
-      body: JSON.stringify({ selected, correct: correctAnswer })
-    }).then(res => res.json()).then(data => {
-      document.querySelectorAll('.card').forEach(card => {
-        card.classList.remove('correct', 'incorrect');
-        if (card.getAttribute('data-choice') === data.correct) card.classList.add('correct');
-        if (card.getAttribute('data-choice') === selected && data.result === 'incorrect')
-          card.classList.add('incorrect');
-      });
-      if (!isMuted) {
-        (data.result === 'correct' ? soundCorrect : soundWrong).play();
-      }
-      fetch(`/explanation/${questionIndex}`).then(res => res.json()).then(data => {
-        document.getElementById('explanation-box').innerText = '📘 Explanation: ' + data.explanation;
-        document.getElementById('explanation-box').style.display = 'block';
-        document.getElementById('detailed-box').innerText = '📝 Detailed Explanation: ' + data.detailed;
-        document.getElementById('detailed-box').style.display = 'block';
-      });
+function checkAnswer(el) {
+  if (answered) return;
+  answered = true;
+  clearInterval(timerId);
+  timerId = null;
+  const selected = el.getAttribute('data-choice');
+
+  fetch('/check', {
+    method: 'POST',
+    headers: {'Content-Type': 'application/json'},
+    body: JSON.stringify({ selected, correct: correctAnswer })
+  })
+  .then(res => {
+    if (!res.ok) {
+      return res.json().then(data => { throw new Error(data.message); });
+    }
+    return res.json();
+  })
+  .then(data => {
+    if (data.result === 'limit_reached') {
+      alert(data.message);
+      window.location.href = '/stop'; // توجه لصفحة التوقف
+      return;
+    }
+
+    document.querySelectorAll('.card').forEach(card => {
+      card.classList.remove('correct', 'incorrect');
+      if (card.getAttribute('data-choice') === data.correct) card.classList.add('correct');
+      if (card.getAttribute('data-choice') === selected && data.result === 'incorrect')
+        card.classList.add('incorrect');
     });
-  }
+
+    if (!isMuted) {
+      (data.result === 'correct' ? soundCorrect : soundWrong).play();
+    }
+
+    fetch(`/explanation/${questionIndex}`).then(res => res.json()).then(data => {
+      document.getElementById('explanation-box').innerText = '📘 Explanation: ' + data.explanation;
+      document.getElementById('explanation-box').style.display = 'block';
+      document.getElementById('detailed-box').innerText = '📝 Detailed Explanation: ' + data.detailed;
+      document.getElementById('detailed-box').style.display = 'block';
+    });
+  })
+  .catch(error => {
+    alert(error.message);
+  });
+}
 
   function goNext() {
     sessionStorage.setItem("isMuted", isMuted ? "true" : "false");
