@@ -14,26 +14,22 @@
       color: #e0e0e0;
       margin: 0;
     }
-
     h1 {
       font-size: 28px;
       color: #4caf50;
       margin-bottom: 20px;
     }
-
     p {
       font-size: 18px;
       margin: 8px 0;
       color: #cfcfcf;
     }
-
     .motiv {
       margin-top: 25px;
       font-size: 20px;
       font-weight: bold;
       color: #90caf9;
     }
-
     a {
       display: inline-block;
       margin-top: 30px;
@@ -45,26 +41,14 @@
       font-size: 18px;
       transition: background-color 0.3s ease;
     }
-
     a:hover {
       background-color: #1565c0;
     }
-
-    /* Responsive for small devices */
     @media (max-width: 600px) {
-      h1 {
-        font-size: 24px;
-      }
-
-      p, .motiv, a {
-        font-size: 16px;
-      }
-
-      a {
-        padding: 10px 20px;
-      }
+      h1 { font-size: 24px; }
+      p, .motiv, a { font-size: 16px; }
+      a { padding: 10px 20px; }
     }
-    /* رسم بياني */
     #sessionsChart {
       background: #21252b;
       border-radius: 18px;
@@ -82,7 +66,6 @@
       }
     }
   </style>
-  <!-- مكتبة الرسم Chart.js -->
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
@@ -104,7 +87,6 @@
     {% endif %}
   </div>
 
-  <!-- رسم بياني لتقدم المستخدم في الجلسات السابقة -->
   {% if user_sessions and user_sessions|length > 1 %}
     <h2 style="margin-top:34px; color:#4caf50; font-size:21px;">تقدمك في الجلسات السابقة</h2>
     <canvas id="sessionsChart" height="210"></canvas>
@@ -112,7 +94,6 @@
 
   <a href="{{ url_for('start') }}">الرجوع للرئيسية</a>
 
-  <!-- جافاسكريبت لرسم البياني -->
   {% if user_sessions and user_sessions|length > 1 %}
   <script>
     // بيانات الجلسات من بايثون (Flask)
@@ -120,30 +101,50 @@
     const labels = sessionData.map(x => x.date);
     const data = sessionData.map(x => x.score);
 
+    // ألوان الأعمدة ديناميكية حسب الدرجة
+    function barColors() {
+      return data.map(v =>
+        v >= 8 ? "#43e97b" : v >= 5 ? "#00c6ff" : v >= 3 ? "#ffc837" : "#f85032"
+      );
+    }
+
     const ctx = document.getElementById('sessionsChart').getContext('2d');
     new Chart(ctx, {
-      type: 'line',
+      type: 'bar',
       data: {
         labels: labels,
         datasets: [{
           label: 'عدد الإجابات الصحيحة في كل جلسة',
           data: data,
-          backgroundColor: '#4caf50',
-          borderColor: '#2196f3',
-          fill: true,
-          tension: 0.23,
-          pointRadius: 5,
-          pointBackgroundColor: '#4caf50',
+          backgroundColor: barColors(),
+          borderRadius: 8,
+          barPercentage: 0.7,
+          categoryPercentage: 0.68
         }]
       },
       options: {
         plugins: {
-          legend: { display: true, position: 'bottom' },
-          title: { display: false }
+          legend: { display: false },
+          tooltip: {
+            callbacks: {
+              label: function(context) {
+                return "الإجابات الصحيحة: " + context.parsed.y;
+              }
+            }
+          }
         },
         scales: {
-          x: { title: { display: true, text: "تاريخ الجلسة" }, grid: { color: "#31363a" } },
-          y: { title: { display: true, text: "عدد الإجابات الصحيحة" }, grid: { color: "#31363a" }, beginAtZero: true }
+          x: {
+            title: { display: true, text: "تاريخ الجلسة", color: "#4caf50", font: { weight: "bold", size: 15 } },
+            grid: { color: "#31363a" },
+            ticks: { color: "#bbb", font: { weight: "bold" } }
+          },
+          y: {
+            title: { display: true, text: "عدد الإجابات الصحيحة", color: "#4caf50", font: { weight: "bold", size: 15 } },
+            beginAtZero: true,
+            grid: { color: "#31363a" },
+            ticks: { color: "#eee", font: { weight: "bold" } }
+          }
         }
       }
     });
