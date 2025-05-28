@@ -442,6 +442,12 @@ def async_save_counter(email, new_count):
     except Exception as e:
         print("[gsheet] Error save_counter async:", e)
 
+def async_save_counter(email, new_count):
+    try:
+        save_user_counter(email, new_count)
+    except Exception as e:
+        print("[gsheet] Error save_counter async:", e)
+
 @app.route('/check', methods=['POST'])
 @login_required
 def check():
