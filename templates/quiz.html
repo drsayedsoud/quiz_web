@@ -189,14 +189,16 @@
   <button id="mute-btn" class="mute-button" onclick="toggleMute()">🔊</button>
 
   <div class="top-info">
-    <div id="score">Score: {{ score }} / {{ attempted }} ({{ "%.1f"|format(percentage) }}%)</div>
-    <small id="metadata" style="font-size: 0.8rem; color: #bbb; margin-top: 2px;">
-  {% if metadata and metadata.strip() %}
-    {{ metadata }}
-  {% else %}
-    ......
-  {% endif %}
-</small>
+<div class="score-metadata">
+  <div id="score">Score: {{ score }} / {{ attempted }} ({{ "%.1f"|format(percentage) }}%)</div>
+  <div id="metadata" style="font-size: 0.8rem; color: #bbb; margin-left: 12px; white-space: nowrap;">
+    {% if metadata and metadata.strip() %}
+      {{ metadata }}
+    {% else %}
+      ......
+    {% endif %}
+  </div>
+</div>
 
     <div id="timer" class="question-timer-container">
       Time Left: <span id="time">30</span> sec
