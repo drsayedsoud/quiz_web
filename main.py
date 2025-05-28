@@ -424,6 +424,12 @@ def quiz():
                            total=total,
                            subject=subject)
 
+def async_save_counter(email, new_count):
+    try:
+        save_user_counter(email, new_count)
+    except Exception as e:
+        print("[gsheet] Error save_counter async:", e)
+
 @app.route('/check', methods=['POST'])
 @login_required
 def check():
@@ -456,8 +462,7 @@ def check():
 
     if email:
         new_count = current_count + 1
-        print(f"[DEBUG] New Count after increment: {new_count}")
-        save_user_counter(email, new_count)
+        threading.Thread(target=async_save_counter, args=(email, new_count)).start()
         session['global_question_counter'] = new_count
 
     return jsonify({
