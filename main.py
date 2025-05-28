@@ -8,6 +8,7 @@ import pandas as pd
 import threading
 import random
 import datetime
+import math
 from gsheet_helper import save_counter, get_counter, save_session, get_session, save_vip, check_vip
 
 EXCEL_FILE = 'quiz_shuffle.xlsx'
@@ -68,6 +69,7 @@ def load_all_questions_from_excel():
             'correct': row[5],
             'explanation': row[6] if len(row) > 6 else '',
             'detailed': row[9] if len(row) > 9 else '',
+            'metadata': row[10] if len(row) > 10 else ''
         })
     return questions
 
@@ -213,20 +215,23 @@ def get_questions():
                 'explanation': row[6] if len(row) > 6 else '',
                 'url': convert_drive_link_to_direct_url(row[7]) if len(row) > 7 else '',
                 'filename': row[8] if len(row) > 8 else '',
-                'detailed': row[9] if len(row) > 9 else ''
+                'detailed': row[9] if len(row) > 9 else '',
+                'metadata': row[10] if len(row) > 10 else ''
             })
 
     return questions
 
 questions = get_questions()
 
-def save_user_session(email, score, attempted):
+def save_user_session(email, score, attempted, subject=None, current_index=None):
     today = datetime.datetime.now().strftime('%Y-%m-%d')
     session_data = {
         "email": email,
         "date": today,
         "score": score,
-        "attempted": attempted
+        "attempted": attempted,
+        "subject": subject,
+        "last_question_index": current_index
     }
     # 1. إضافة جوجل شيت
     try:
@@ -278,6 +283,13 @@ def get_user_sessions(email):
         return [d for d in data if d['email'] == email]
     return []
 
+def get_last_question_index_for_subject(email, subject):
+    sessions = get_user_sessions(email)
+    for sess in reversed(sessions):
+        if sess.get('subject') == subject:
+            return sess.get('last_question_index', 1)
+    return 1
+
 @app.route('/')
 def root_redirect():
     if 'email' in session:
@@ -296,7 +308,6 @@ def signup_page():
 def set_email():
     session['email'] = request.json.get('email')
     return jsonify({'status': 'ok'})
-
 
 @app.route('/start')
 @login_required
@@ -328,7 +339,7 @@ def start():
 def start_session():
     email = session.get('email')
     current_count = load_user_counter(email) if email else 0
-    
+
     # التحقق مع السماح لـ VIP بتخطي الحد
     if email and (not is_vip_user(email)) and current_count >= 100:
         return redirect(url_for('stop_page'))
@@ -337,8 +348,14 @@ def start_session():
     reset_subject_index = request.form.get('reset_subject_index') == 'true'
 
     if choice in subject_start_indexes:
-        saved_indexes = session.get('revision_indexes', {})
-        session['current_index'] = subject_start_indexes[choice] if reset_subject_index else saved_indexes.get(choice, subject_start_indexes[choice])
+        if reset_subject_index:
+            session['current_index'] = subject_start_indexes[choice]
+        else:
+            last_q_index = get_last_question_index_for_subject(email, choice)
+            if last_q_index >= subject_start_indexes[choice]:
+                session['current_index'] = last_q_index
+            else:
+                session['current_index'] = subject_start_indexes[choice]
         session['score'] = 0
         session['attempted'] = 0
         session['subject'] = choice
@@ -394,6 +411,15 @@ def quiz():
         total = len(questions)
         question_id = current_index
 
+    # Handle metadata correctly to avoid float error or 'man' string
+    raw_metadata = question.get('metadata', '')
+    if raw_metadata is None:
+        metadata = ''
+    else:
+        metadata = str(raw_metadata)
+        if metadata.lower() == 'nan' or metadata.strip() == '':
+            metadata = ''
+
     score = session.get('score', 0)
     attempted = session.get('attempted', 0)
     percentage = (score / attempted * 100) if attempted > 0 else 0
@@ -407,7 +433,14 @@ def quiz():
                            attempted=attempted,
                            percentage=percentage,
                            total=total,
-                           subject=subject)
+                           subject=subject,
+                           metadata=metadata)
+
+def async_save_counter(email, new_count):
+    try:
+        save_user_counter(email, new_count)
+    except Exception as e:
+        print("[gsheet] Error save_counter async:", e)
 
 @app.route('/check', methods=['POST'])
 @login_required
@@ -441,8 +474,7 @@ def check():
 
     if email:
         new_count = current_count + 1
-        print(f"[DEBUG] New Count after increment: {new_count}")
-        save_user_counter(email, new_count)
+        threading.Thread(target=async_save_counter, args=(email, new_count)).start()
         session['global_question_counter'] = new_count
 
     return jsonify({
@@ -492,8 +524,10 @@ def finish_session():
     percentage = (score / attempted * 100) if attempted > 0 else 0
 
     email = session.get('email')
+    subject = session.get('subject')
+    current_index = session.get('current_index', 1)
     if email:
-        save_user_session(email, score, attempted)
+        save_user_session(email, score, attempted, subject, current_index)
 
     if 'subject' in session:
         subject_name = session['subject']
@@ -650,9 +684,11 @@ def vip_manager():
 def add_vip():
     if not session.get('is_admin'):
         return redirect(url_for('vip_login'))
+    global full_access_users
     email = request.form.get('email')
     full_access_users[email] = "FULL"
     save_vip_users(full_access_users)  # حفظ التعديل في الملف
+    full_access_users = load_vip_users()  # إعادة تحميل بيانات VIP من الملف لضمان التزامن
     return f"<h3 style='color:green; text-align:center;'>✅ تم إضافة {email} كمستخدم VIP</h3><br><a href='/vip_manager'>رجوع</a>"
 
 @app.route('/delete_user', methods=['POST'])
