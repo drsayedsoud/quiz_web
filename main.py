@@ -220,13 +220,15 @@ def get_questions():
 
 questions = get_questions()
 
-def save_user_session(email, score, attempted):
+def save_user_session(email, score, attempted, subject=None, current_index=None):
     today = datetime.datetime.now().strftime('%Y-%m-%d')
     session_data = {
         "email": email,
         "date": today,
         "score": score,
-        "attempted": attempted
+        "attempted": attempted,
+        "subject": subject,
+        "last_question_index": current_index
     }
     # 1. إضافة جوجل شيت
     try:
@@ -278,6 +280,13 @@ def get_user_sessions(email):
         return [d for d in data if d['email'] == email]
     return []
 
+def get_last_question_index_for_subject(email, subject):
+    sessions = get_user_sessions(email)
+    for sess in reversed(sessions):
+        if sess.get('subject') == subject:
+            return sess.get('last_question_index', 1)
+    return 1
+
 @app.route('/')
 def root_redirect():
     if 'email' in session:
@@ -328,7 +337,7 @@ def start():
 def start_session():
     email = session.get('email')
     current_count = load_user_counter(email) if email else 0
-    
+
     # التحقق مع السماح لـ VIP بتخطي الحد
     if email and (not is_vip_user(email)) and current_count >= 100:
         return redirect(url_for('stop_page'))
@@ -337,8 +346,14 @@ def start_session():
     reset_subject_index = request.form.get('reset_subject_index') == 'true'
 
     if choice in subject_start_indexes:
-        saved_indexes = session.get('revision_indexes', {})
-        session['current_index'] = subject_start_indexes[choice] if reset_subject_index else saved_indexes.get(choice, subject_start_indexes[choice])
+        if reset_subject_index:
+            session['current_index'] = subject_start_indexes[choice]
+        else:
+            last_q_index = get_last_question_index_for_subject(email, choice)
+            if last_q_index >= subject_start_indexes[choice]:
+                session['current_index'] = last_q_index
+            else:
+                session['current_index'] = subject_start_indexes[choice]
         session['score'] = 0
         session['attempted'] = 0
         session['subject'] = choice
@@ -492,8 +507,10 @@ def finish_session():
     percentage = (score / attempted * 100) if attempted > 0 else 0
 
     email = session.get('email')
+    subject = session.get('subject')
+    current_index = session.get('current_index', 1)
     if email:
-        save_user_session(email, score, attempted)
+        save_user_session(email, score, attempted, subject, current_index)
 
     if 'subject' in session:
         subject_name = session['subject']
