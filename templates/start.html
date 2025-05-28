@@ -203,15 +203,29 @@
         <div class="card" onclick="showOptions('{{ subject }}')">{{ subject }}</div>
       {% endfor %}
     </div>
-    <div class="footer-links">
-      <a href="/privacy" class="footer-link">سياسة الخصوصية</a>
-      <a href="/about" class="footer-link">من نحن</a>
-      <a href="/vip_login" title="إعدادات VIP" class="vip-icon">⚙️</a>
-      <form action="{{ url_for('logout') }}" method="GET" style="width:100%;">
-        <button type="submit" class="logout-small-btn">تسجيل خروج</button>
-      </form>
-    </div>
-  </div>
+<div class="footer-links">
+  <form action="{{ url_for('start') }}" method="GET" style="width:100%; margin-bottom: 8px;">
+    <button type="submit" style="
+      width: 100%;
+      background-color: #1565c0;
+      color: white;
+      padding: 10px 0;
+      border-radius: 6px;
+      border: none;
+      cursor: pointer;
+      font-weight: bold;
+    ">عودة للرئيسية</button>
+  </form>
+
+  <a href="/privacy" class="footer-link">سياسة الخصوصية</a>
+  <a href="/about" class="footer-link">من نحن</a>
+  <a href="/vip_login" title="إعدادات VIP" class="vip-icon">⚙️</a>
+
+  <form action="{{ url_for('logout') }}" method="GET" style="width:100%;">
+    <button type="submit" class="logout-small-btn">تسجيل خروج</button>
+  </form>
+</div>
+
   <script>
     const subjectLinks = {
       "Endodontic": "https://www.dentiscope.org/_files/ugd/66484b_13de14e0ee1245d098407d33277bd911.pdf",
