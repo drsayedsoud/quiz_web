@@ -32,11 +32,8 @@ def load_vip_users():
         }
 
 def save_vip_users(data):
-    try:
-        for email in data:
-            save_vip(email, True)
-    except Exception as e:
-        print("[gsheet] Error save_vip:", e)
+    # for email in data:
+    #     save_vip(email, True)
     with open(VIP_USERS_FILE, "w") as f:
         json.dump(data, f)
 
@@ -52,11 +49,8 @@ def login_required(f):
     return decorated_function
 
 def is_vip_user(email):
-    try:
-        if check_vip(email):
-            return True
-    except Exception as e:
-        print("[gsheet] Error check_vip:", e)
+    # if check_vip(email):
+    #     return True
     return email in full_access_users
 
 def load_all_questions_from_excel():
@@ -108,15 +102,10 @@ def decode_email(encoded):
     return base64.b64decode(encoded.encode()).decode()
 
 def load_user_counter(email):
-    # إضافة: جلب من Google Sheets
-    try:
-        gs_count = get_counter(email)
-        if gs_count > 0:
-            return gs_count
-    except Exception as e:
-        print("[gsheet] Error get_counter:", e)
-
-    # الكود القديم مع JSON يبقى كما هو
+    # تعطيل جلب من Google Sheets
+    # gs_count = get_counter(email)
+    # if gs_count > 0:
+    #     return gs_count
     key = encode_email(email)
     if os.path.exists(USER_COUNTER_FILE):
         with open(USER_COUNTER_FILE, "r") as f:
@@ -125,13 +114,8 @@ def load_user_counter(email):
     return 0
 
 def save_user_counter(email, value):
-    # إضافة: حفظ في Google Sheets
-    try:
-        save_counter(email, value)
-    except Exception as e:
-        print("[gsheet] Error save_counter:", e)
-
-    # الكود القديم مع JSON يبقى كما هو
+    # تعطيل حفظ في Google Sheets
+    # save_counter(email, value)
     key = encode_email(email)
     if os.path.exists(USER_COUNTER_FILE):
         with open(USER_COUNTER_FILE, "r") as f:
@@ -178,48 +162,8 @@ def convert_drive_link_to_direct_url(url):
     return url
 
 def get_questions():
-    try:
-        creds = Credentials.from_service_account_file(
-            SERVICE_ACCOUNT_FILE,
-            scopes=['https://www.googleapis.com/auth/spreadsheets.readonly']
-        )
-        service = build('sheets', 'v4', credentials=creds)
-        result = service.spreadsheets().values().get(
-            spreadsheetId=SPREADSHEET_ID,
-            range=RANGE_NAME
-        ).execute()
-        rows = result.get('values', [])
-
-        if os.path.exists("quiz_web_site.xlsx"):
-            os.remove("quiz_web_site.xlsx")
-        df = pd.DataFrame(rows)
-        df.to_excel("quiz_web_site.xlsx", index=False, header=False)
-        print("✅ تم تحديث الأسئلة من Google Sheets.")
-
-    except Exception as e:
-        print("❌ فشل الاتصال بـ Google Sheets، سيتم استخدام النسخة المحلية.")
-        try:
-            df = pd.read_excel("quiz_web_site.xlsx", header=None)
-            rows = df.values.tolist()
-        except Exception as e:
-            print("❌ فشل قراءة النسخة المحلية أيضًا.")
-            return []
-
-    questions = []
-    for row in rows:
-        if len(row) >= 6:
-            questions.append({
-                'question': row[0],
-                'choices': row[1:5] if len(row) > 4 else ['']*4,
-                'correct': row[5] if len(row) > 5 else '',
-                'explanation': row[6] if len(row) > 6 else '',
-                'url': convert_drive_link_to_direct_url(row[7]) if len(row) > 7 else '',
-                'filename': row[8] if len(row) > 8 else '',
-                'detailed': row[9] if len(row) > 9 else '',
-                'metadata': row[10] if len(row) > 10 else ''
-            })
-
-    return questions
+    # كل كود جلب من Google Sheet معطل، فقط يرجع الأسئلة من الـ Excel المحلي
+    return all_questions
 
 questions = get_questions()
 
@@ -233,13 +177,9 @@ def save_user_session(email, score, attempted, subject=None, current_index=None)
         "subject": subject,
         "last_question_index": current_index
     }
-    # 1. إضافة جوجل شيت
-    try:
-        save_session(email, json.dumps(session_data, ensure_ascii=False))
-    except Exception as e:
-        print("[gsheet] Error save_session:", e)
+    # تعطيل حفظ في Google Sheets
+    # save_session(email, json.dumps(session_data, ensure_ascii=False))
 
-    # 2. يبقى كود JSON كما هو (احتياطي)
     data = []
     if os.path.exists(SESSIONS_FILE):
         with open(SESSIONS_FILE, "r", encoding="utf-8") as f:
@@ -252,28 +192,23 @@ def save_user_session(email, score, attempted, subject=None, current_index=None)
         json.dump(data, f, ensure_ascii=False)
 
 def get_user_sessions(email):
-    # 1. جلب من Google Sheets
-    try:
-        raw = get_session(email)
-        if raw:
-            # قد يكون أكثر من جلسة، حاول جمعهم أو حللهم لقائمة
-            sessions = []
-            if isinstance(raw, list):
-                for item in raw:
-                    try:
-                        sessions.append(json.loads(item))
-                    except:
-                        pass
-            else:
-                try:
-                    sessions.append(json.loads(raw))
-                except:
-                    pass
-            return sessions
-    except Exception as e:
-        print("[gsheet] Error get_session:", e)
+    # تعطيل جلب من Google Sheets
+    # raw = get_session(email)
+    # if raw:
+    #     sessions = []
+    #     if isinstance(raw, list):
+    #         for item in raw:
+    #             try:
+    #                 sessions.append(json.loads(item))
+    #             except:
+    #                 pass
+    #     else:
+    #         try:
+    #             sessions.append(json.loads(raw))
+    #         except:
+    #             pass
+    #     return sessions
 
-    # 2. الكود القديم يبقى (احتياطي)
     if os.path.exists(SESSIONS_FILE):
         with open(SESSIONS_FILE, "r", encoding="utf-8") as f:
             try:
@@ -318,10 +253,8 @@ def start():
 
     is_vip = False
     if email:
-        try:
-            is_vip = check_vip(email)
-        except Exception as e:
-            print("[gsheet] Error check_vip:", e)
+        # تعطيل جلب من Google Sheet
+        # is_vip = check_vip(email)
         if not is_vip:
             is_vip = email in full_access_users
 
@@ -411,7 +344,6 @@ def quiz():
         total = len(questions)
         question_id = current_index
 
-    # Handle metadata correctly to avoid float error or 'man' string
     raw_metadata = question.get('metadata', '')
     if raw_metadata is None:
         metadata = ''
@@ -437,16 +369,7 @@ def quiz():
                            metadata=metadata)
 
 def async_save_counter(email, new_count):
-    try:
-        save_user_counter(email, new_count)
-    except Exception as e:
-        print("[gsheet] Error save_counter async:", e)
-
-def async_save_counter(email, new_count):
-    try:
-        save_user_counter(email, new_count)
-    except Exception as e:
-        print("[gsheet] Error save_counter async:", e)
+    save_user_counter(email, new_count)
 
 @app.route('/check', methods=['POST'])
 @login_required
@@ -647,7 +570,6 @@ def vip_manager():
     over_limit = 0
     active_today_count = 0  # عدد المستخدمين النشطين اليوم
 
-    # تحميل عداد الأسئلة لكل مستخدم
     if os.path.exists(USER_COUNTER_FILE):
         with open(USER_COUNTER_FILE, "r") as f:
             raw_data = json.load(f)
@@ -662,13 +584,11 @@ def vip_manager():
         total_users = len(user_counters)
         over_limit = sum(1 for count in user_counters.values() if count >= 200)
 
-    # حساب المستخدمين النشطين اليوم من ملف الجلسات
     today_str = datetime.datetime.now().strftime('%Y-%m-%d')
     if os.path.exists(SESSIONS_FILE):
         with open(SESSIONS_FILE, "r", encoding="utf-8") as f:
             try:
                 sessions_data = json.load(f)
-                # مجموعة الإيميلات التي نشطت اليوم
                 active_emails_today = {session['email'] for session in sessions_data if session['date'] == today_str}
                 active_today_count = len(active_emails_today)
             except:
@@ -683,7 +603,7 @@ def vip_manager():
         over_limit=over_limit,
         full_access_users=full_access_users,
         vip_emails=vip_emails,
-        active_today=active_today_count  # أضفنا هذا المتغير
+        active_today=active_today_count
     )
 
 @app.route('/add_vip', methods=['POST'])
@@ -693,8 +613,8 @@ def add_vip():
     global full_access_users
     email = request.form.get('email')
     full_access_users[email] = "FULL"
-    save_vip_users(full_access_users)  # حفظ التعديل في الملف
-    full_access_users = load_vip_users()  # إعادة تحميل بيانات VIP من الملف لضمان التزامن
+    save_vip_users(full_access_users)
+    full_access_users = load_vip_users()
     return f"<h3 style='color:green; text-align:center;'>✅ تم إضافة {email} كمستخدم VIP</h3><br><a href='/vip_manager'>رجوع</a>"
 
 @app.route('/delete_user', methods=['POST'])
