@@ -32,12 +32,12 @@ def load_vip_users():
         }
 
 def save_vip_users(data):
+    # تم تعليق Google Sheet هنا
     # for email in data:
     #     save_vip(email, True)
     with open(VIP_USERS_FILE, "w") as f:
         json.dump(data, f)
 
-# هُنا يتم تحميل بيانات الـ VIP من الملف
 full_access_users = load_vip_users()
 
 def login_required(f):
@@ -49,6 +49,7 @@ def login_required(f):
     return decorated_function
 
 def is_vip_user(email):
+    # تم تعليق Google Sheet هنا
     # if check_vip(email):
     #     return True
     return email in full_access_users
@@ -102,7 +103,7 @@ def decode_email(encoded):
     return base64.b64decode(encoded.encode()).decode()
 
 def load_user_counter(email):
-    # تعطيل جلب من Google Sheets
+    # تم تعليق جلب Google Sheet هنا
     # gs_count = get_counter(email)
     # if gs_count > 0:
     #     return gs_count
@@ -114,7 +115,7 @@ def load_user_counter(email):
     return 0
 
 def save_user_counter(email, value):
-    # تعطيل حفظ في Google Sheets
+    # تم تعليق حفظ Google Sheet هنا
     # save_counter(email, value)
     key = encode_email(email)
     if os.path.exists(USER_COUNTER_FILE):
@@ -162,7 +163,6 @@ def convert_drive_link_to_direct_url(url):
     return url
 
 def get_questions():
-    # كل كود جلب من Google Sheet معطل، فقط يرجع الأسئلة من الـ Excel المحلي
     return all_questions
 
 questions = get_questions()
@@ -177,7 +177,7 @@ def save_user_session(email, score, attempted, subject=None, current_index=None)
         "subject": subject,
         "last_question_index": current_index
     }
-    # تعطيل حفظ في Google Sheets
+    # تم تعليق حفظ Google Sheet هنا
     # save_session(email, json.dumps(session_data, ensure_ascii=False))
 
     data = []
@@ -192,7 +192,7 @@ def save_user_session(email, score, attempted, subject=None, current_index=None)
         json.dump(data, f, ensure_ascii=False)
 
 def get_user_sessions(email):
-    # تعطيل جلب من Google Sheets
+    # تم تعليق جلب Google Sheet هنا
     # raw = get_session(email)
     # if raw:
     #     sessions = []
@@ -253,7 +253,7 @@ def start():
 
     is_vip = False
     if email:
-        # تعطيل جلب من Google Sheet
+        # تم تعليق جلب Google Sheet هنا
         # is_vip = check_vip(email)
         if not is_vip:
             is_vip = email in full_access_users
@@ -273,7 +273,6 @@ def start_session():
     email = session.get('email')
     current_count = load_user_counter(email) if email else 0
 
-    # التحقق مع السماح لـ VIP بتخطي الحد
     if email and (not is_vip_user(email)) and current_count >= 100:
         return redirect(url_for('stop_page'))
 
@@ -636,6 +635,101 @@ def delete_user():
                 json.dump(data, f)
 
     return redirect(url_for('vip_manager'))
+
+# ---------- Route لجلب كل بيانات المستخدمين للجدول الجديد ----------
+@app.route('/get_all_users_info')
+def get_all_users_info():
+    user_counters = {}
+    if os.path.exists(USER_COUNTER_FILE):
+        with open(USER_COUNTER_FILE, "r") as f:
+            raw_data = json.load(f)
+        for encoded_email, count in raw_data.items():
+            try:
+                email = base64.b64decode(encoded_email.encode()).decode()
+            except:
+                email = encoded_email
+            user_counters[email] = count
+
+    vip_emails = set(load_vip_users().keys())
+
+    sessions_by_user = {}
+    if os.path.exists(SESSIONS_FILE):
+        with open(SESSIONS_FILE, "r", encoding="utf-8") as f:
+            try:
+                sessions_data = json.load(f)
+            except:
+                sessions_data = []
+        for sess in sessions_data:
+            em = sess['email']
+            if em not in sessions_by_user:
+                sessions_by_user[em] = []
+            sessions_by_user[em].append(sess)
+
+    for em in sessions_by_user:
+        sessions_by_user[em].sort(key=lambda s: s.get('date', ''), reverse=True)
+
+    all_users = []
+    for email in set(list(user_counters.keys()) + list(sessions_by_user.keys())):
+        all_users.append({
+            "email": email,
+            "counter": user_counters.get(email, 0),
+            "is_vip": email in vip_emails,
+            "sessions": sessions_by_user.get(email, [])
+        })
+
+    all_users.sort(key=lambda u: u['sessions'][0]['date'] if u['sessions'] else '', reverse=True)
+    return jsonify(all_users)
+
+# ---------- Route مزامنة البيانات مع Google Sheets عند الضغط على الزر ----------
+import time
+from gsheet_helper import get_sheet
+
+@app.route('/sync_user_data')
+def sync_user_data():
+    try:
+        # --- Sync counters ---
+        if os.path.exists(USER_COUNTER_FILE):
+            with open(USER_COUNTER_FILE, "r") as f:
+                data = json.load(f)
+            for encoded_email, count in data.items():
+                try:
+                    email = base64.b64decode(encoded_email.encode()).decode()
+                except:
+                    email = encoded_email
+                save_counter(email, count)
+                time.sleep(0.1)
+
+        # --- Sync VIP users ---
+        if os.path.exists(VIP_USERS_FILE):
+            with open(VIP_USERS_FILE, "r") as f:
+                vips = json.load(f)
+            for email in vips:
+                save_vip(email, True)
+                time.sleep(0.1)
+
+        # --- Sync sessions (احترافي، لا يكرر القراءة) ---
+        if os.path.exists(SESSIONS_FILE):
+            with open(SESSIONS_FILE, "r", encoding="utf-8") as f:
+                sessions_data = json.load(f)
+
+            ws = get_sheet('Sessions')
+            all_rows = ws.get_all_values()    # اقرأ كل الجلسات الحالية مرة واحدة فقط!
+            existing_pairs = set((row[0], row[1]) for row in all_rows if len(row) > 1)
+
+            for sess in sessions_data:
+                session_str = json.dumps(sess, ensure_ascii=False)
+                pair = (sess['email'], session_str)
+                if pair not in existing_pairs:
+                    ws.append_row([sess['email'], session_str])
+                    time.sleep(0.1)
+
+        return jsonify({"success": True})
+
+    except Exception as e:
+        print("Sync error:", e)
+        import traceback
+        traceback.print_exc()
+        return jsonify({"success": False})
 
 @app.route('/about')
 def about_page():

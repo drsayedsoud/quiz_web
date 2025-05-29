@@ -31,7 +31,10 @@ def get_counter(email):
 # ------------------ Sessions ------------------
 def save_session(email, session_data):
     ws = get_sheet('Sessions')
-    # دائماً أضف صف جديد لكل جلسة (لا تحدث، بل append فقط)
+    # لا تكتب الجلسة إذا كانت مكررة (تفادي تكرار الصفوف)
+    existing_sessions = get_session(email)
+    if existing_sessions and session_data in existing_sessions:
+        return
     ws.append_row([email, session_data])
 
 def get_session(email):
