@@ -66,6 +66,7 @@ def load_all_questions_from_excel():
             'detailed': row[9] if len(row) > 9 else '',
             'metadata': row[10] if len(row) > 10 else ''
         })
+    print("✅ تم التحميل من السرفر بنجاح")    
     return questions
 
 all_questions = load_all_questions_from_excel()
