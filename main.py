@@ -10,6 +10,43 @@ import random
 import datetime
 import math
 from gsheet_helper import save_counter, get_counter, save_session, get_session, save_vip, check_vip
+from openpyxl import Workbook
+import openpyxl
+import io
+import pandas as pd
+from google.oauth2.service_account import Credentials
+from googleapiclient.discovery import build
+
+EXCEL_FILE = 'quiz_shuffle.xlsx'
+SERVICE_ACCOUNT_FILE = 'dental-world-dde59-cb4421544a45.json'
+SPREADSHEET_ID = '1dGa6lmOLy5a7Kkw3DNDh2uw4aPjOCSP9oA6AmTIbAa8'
+RANGE_NAME = 'Sheet1!A1:K'  # تأكد من نطاق البيانات مع رؤوس الأعمدة
+
+def update_excel_from_gsheet():
+    try:
+        creds = Credentials.from_service_account_file(
+            SERVICE_ACCOUNT_FILE,
+            scopes=['https://www.googleapis.com/auth/spreadsheets.readonly']
+        )
+        service = build('sheets', 'v4', credentials=creds)
+        sheet = service.spreadsheets()
+
+        result = sheet.values().get(spreadsheetId=SPREADSHEET_ID, range=RANGE_NAME).execute()
+        rows = result.get('values', [])
+
+        if not rows:
+            print("⚠️ لا توجد بيانات في Google Sheets.")
+            return False
+
+        df = pd.DataFrame(rows[1:], columns=rows[0])  # الصف الأول رؤوس الأعمدة
+
+        df.to_excel(EXCEL_FILE, index=False)
+        print(f"✅ تم تحديث ملف '{EXCEL_FILE}' بنجاح من Google Sheets.")
+        return True
+    except Exception as e:
+        print(f"❌ خطأ أثناء التحديث من Google Sheets: {e}")
+        return False
+# استيراد دالة التحديث
 
 EXCEL_FILE = 'quiz_shuffle.xlsx'
 USER_COUNTER_FILE = "user_counters.json"
@@ -19,6 +56,9 @@ SESSIONS_FILE = "user_sessions.json"
 VIP_USERS_FILE = "vip_users.json"
 
 from functools import wraps
+
+# --- تحديث ملف quiz_shuffle.xlsx من Google Sheets عند بدء التشغيل ---
+
 
 def load_vip_users():
     if os.path.exists(VIP_USERS_FILE):
@@ -66,10 +106,16 @@ def load_all_questions_from_excel():
             'detailed': row[9] if len(row) > 9 else '',
             'metadata': row[10] if len(row) > 10 else ''
         })
-    print("✅ تم التحميل من السرفر بنجاح")    
+        
     return questions
+if update_excel_from_gsheet():
+    print("✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅ تم تحديث البيانات من Google Sheets قبل بدء التطبيق.")
+else:
+    print("⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️ فشل تحديث البيانات من Google Sheets. سيتم استخدام ملف الإكسل المحلي.")
 
 all_questions = load_all_questions_from_excel()
+
+
 
 app = Flask(__name__)
 app.secret_key = 'your_secret_key_here'

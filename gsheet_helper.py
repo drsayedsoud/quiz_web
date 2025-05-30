@@ -1,5 +1,6 @@
 import gspread
 from google.oauth2.service_account import Credentials
+from openpyxl import Workbook
 
 SERVICE_ACCOUNT_FILE = 'dental-world-dde59-cb4421544a45.json'
 SCOPES = ['https://www.googleapis.com/auth/spreadsheets']
@@ -64,3 +65,21 @@ def check_vip(email):
         return ws.cell(cell.row, 2).value == 'True'
     except:
         return False
+
+# ------------------ تحديث ملف quiz_shuffle.xlsx من Google Sheets ------------------
+def update_local_excel_from_gsheet():
+    try:
+        ws = get_sheet('Sheet')  # استبدل بـ اسم الورقة المناسبة
+        all_rows = ws.get_all_values()
+
+        wb = Workbook()
+        ws_local = wb.active
+        ws_local.title = 'Sheet1'
+
+        for row in all_rows:
+            ws_local.append(row)
+
+        wb.save('quiz_shuffle.xlsx')
+        print("✅ تم تحديث ملف quiz_shuffle.xlsx من Google Sheets بنجاح")
+    except Exception as e:
+        print(f"❌ خطأ أثناء تحديث ملف quiz_shuffle.xlsx: {e}")

@@ -1,461 +1,630 @@
 <!DOCTYPE html>
-<html lang="ar">
+<html lang="ar" dir="rtl">
 <head>
-  <meta charset="UTF-8">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
   <title>إدارة مستخدمي VIP</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <style>
+    /* --- Reset --- */
+    * {
+      box-sizing: border-box;
+    }
     body {
-      background: #121212;
-      color: #fff;
-      font-family: 'Segoe UI', sans-serif;
+      background: linear-gradient(135deg, #1f1f29, #121212);
+      color: #e0e0e0;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
       margin: 0;
       min-height: 100vh;
       direction: rtl;
+      line-height: 1.6;
+      user-select: none;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
     }
-    .top-bar {
+    /* Container */
+    .container {
+      max-width: 960px;
+      margin: 24px auto 40px auto;
+      padding: 0 16px;
       display: flex;
-      justify-content: flex-start;
-      align-items: center;
-      gap: 12px;
-      padding: 30px 5vw 0 5vw;
-      margin-bottom: 0;
       flex-wrap: wrap;
+      gap: 24px;
+      justify-content: space-between;
+    }
+    /* Top bar with buttons */
+    .top-bar {
+      width: 100%;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      justify-content: flex-start;
+      padding-bottom: 16px;
+      border-bottom: 1px solid #333;
+      margin-bottom: 24px;
     }
     .top-btn {
+      background: linear-gradient(45deg, #2979ff, #1565c0);
       border: none;
-      border-radius: 11px;
-      font-size: 16px;
-      font-weight: bold;
-      padding: 10px 33px;
-      box-shadow: 0 2px 9px #0007;
-      cursor: pointer;
-      margin-bottom: 0;
-      margin-top: 0;
-      margin-left: 3px;
-    }
-    #sync-btn { background:#c62828; color:#fff; }
-    #show-users-info { background:#0d47a1; color:#fff; }
-    #sync-btn:hover { background:#e53935; }
-    #show-users-info:hover { background:#1976d2; }
-    #main-btn {
-      background: #4caf50;
+      border-radius: 14px;
       color: #fff;
-      transition: background 0.2s;
-      margin-right: 3px;
+      font-weight: 700;
+      padding: 12px 28px;
+      font-size: 16px;
+      cursor: pointer;
+      box-shadow: 0 4px 12px rgb(41 121 255 / 0.5);
+      transition: all 0.3s ease;
+      user-select: none;
+      flex: 1 0 auto;
+      min-width: 140px;
+      text-align: center;
+      white-space: nowrap;
     }
-    #main-btn:hover { background: #388e3c; color: #fff; }
+    .top-btn#sync-btn {
+      background: linear-gradient(45deg, #ff5252, #b71c1c);
+      box-shadow: 0 4px 12px rgb(255 82 82 / 0.6);
+    }
+    .top-btn#sync-btn:hover {
+      background: linear-gradient(45deg, #ff7979, #d32f2f);
+      box-shadow: 0 6px 16px rgb(255 121 121 / 0.8);
+    }
+    .top-btn#show-users-info {
+      background: linear-gradient(45deg, #43a047, #2e7d32);
+      box-shadow: 0 4px 12px rgb(67 160 71 / 0.6);
+    }
+    .top-btn#show-users-info:hover {
+      background: linear-gradient(45deg, #66bb6a, #388e3c);
+      box-shadow: 0 6px 16px rgb(102 187 106 / 0.8);
+    }
+    .top-btn#main-btn {
+      background: linear-gradient(45deg, #0288d1, #01579b);
+      box-shadow: 0 4px 12px rgb(2 136 209 / 0.6);
+    }
+    .top-btn#main-btn:hover {
+      background: linear-gradient(45deg, #03a9f4, #0277bd);
+      box-shadow: 0 6px 16px rgb(3 169 244 / 0.8);
+    }
+    /* Sync message */
     #sync-msg {
-      text-align:center;
-      font-weight:bold;
-      font-size:17px;
-      margin:7px 0 5px 0;
-      min-height:26px;
-      width: 100%;
+      flex-basis: 100%;
+      text-align: center;
+      font-weight: 700;
+      font-size: 18px;
+      margin-top: 6px;
+      min-height: 28px;
+      user-select: text;
+      color: #90caf9;
     }
+    /* VIP Add Card */
     .vip-card {
-      background: #232b36;
-      border-radius: 15px;
-      box-shadow: 0 2px 14px #0004;
-      padding: 20px 17px 15px 17px;
+      background: #222831;
+      border-radius: 20px;
+      padding: 20px 30px;
+      box-shadow: 0 8px 24px rgb(0 0 0 / 0.8);
+      flex: 1 1 320px;
       display: flex;
       align-items: center;
-      gap: 13px;
-      min-width: 220px;
-      max-width: 360px;
-      margin: 28px auto 0 auto;
-      margin-bottom: 0;
+      gap: 20px;
+      flex-wrap: wrap;
+      user-select: text;
     }
     .vip-card h3 {
-      color: #FFD600;
-      font-size: 18px;
-      margin: 0 0 11px 0;
-      text-align: right;
-      letter-spacing: 0.4px;
+      flex-basis: 100%;
+      font-size: 22px;
+      color: #ffd600;
+      margin: 0 0 14px 0;
+      font-weight: 900;
+      letter-spacing: 1.1px;
+      user-select: text;
     }
     .vip-card input[type=email] {
-      padding: 7px 6px;
-      width: 155px;
-      border-radius: 7px;
+      flex-grow: 1;
+      padding: 10px 14px;
+      font-size: 16px;
+      border-radius: 14px;
       border: none;
-      font-size: 15px;
-      background: #191c22;
-      color: #fff;
+      background: #393e46;
+      color: #eee;
       outline: none;
-      margin-left: 8px;
+      transition: box-shadow 0.3s ease;
+      min-width: 0;
+    }
+    .vip-card input[type=email]:focus {
+      box-shadow: 0 0 8px 2px #ffd600;
+      background: #444c56;
     }
     .vip-card button {
-      padding: 7px 17px;
-      font-size: 15px;
+      padding: 12px 28px;
+      font-size: 16px;
+      font-weight: 800;
+      border-radius: 14px;
       border: none;
-      border-radius: 7px;
-      background-color: #ffab00;
-      color: #19191a;
+      background: #ffd600;
+      color: #121212;
       cursor: pointer;
-      font-weight: bold;
-      transition: background 0.2s;
-      margin-top: 0;
+      transition: background 0.3s ease, color 0.3s ease;
+      user-select: none;
+      flex-shrink: 0;
+      box-shadow: 0 6px 18px rgb(255 214 0 / 0.7);
     }
-    .vip-card button:hover { background: #ffd600; }
-    .container {
-      max-width: 900px;
-      margin: 0 auto;
-      padding: 0 8px 36px 8px;
-      display: flex;
-      flex-direction: column;
-      gap: 24px;
+    .vip-card button:hover {
+      background: #fff350;
+      color: #0d0d0d;
+      box-shadow: 0 8px 24px rgb(255 245 104 / 0.9);
     }
+    /* Sidebar */
     .sidebar {
-      background: #1e1e1e;
-      border-radius: 16px;
-      box-shadow: 0 2px 14px rgba(0,0,0,0.13);
-      padding: 17px 12px 7px 12px;
-      margin-bottom: 0;
+      flex: 1 1 200px;
+      background: #222831;
+      border-radius: 20px;
+      box-shadow: 0 8px 30px rgb(0 0 0 / 0.7);
+      padding: 18px 20px;
+      user-select: text;
+      max-height: 320px;
+      overflow-y: auto;
+      min-width: 230px;
     }
     .sidebar h3 {
+      margin: 0 0 14px 0;
       color: #4caf50;
-      font-size: 18px;
-      margin: 0 0 10px 0;
+      font-size: 22px;
+      font-weight: 900;
       text-align: center;
+      letter-spacing: 0.6px;
+      user-select: text;
     }
     .sidebar-list {
-      max-height: 120px;
-      overflow-y: auto;
-      background: #171819;
-      border-radius: 7px;
-      padding: 7px 4px;
-      margin-top: 7px;
-      font-size: 13.5px;
+      font-size: 14px;
+      line-height: 1.4;
+      color: #b0bec5;
+      user-select: text;
     }
     .sidebar-list p {
-      margin: 0 0 7px 0;
-      border-bottom: 1px solid #232323;
-      padding-bottom: 4px;
-      direction: ltr;
-      word-break: break-all;
-      font-size: 13.5px;
+      margin: 0 0 8px 0;
+      padding: 5px 10px;
+      background: #393e46;
+      border-radius: 9px;
+      word-break: break-word;
+      transition: background 0.2s ease;
+      user-select: text;
+      cursor: default;
+      user-select: text;
     }
-    .sidebar-list p:last-child { border-bottom: none; }
+    .sidebar-list p:hover {
+      background: #4caf50;
+      color: #121212;
+      user-select: text;
+    }
+    /* Main Content */
     .main-content {
-      background: #19191a;
-      border-radius: 16px;
-      box-shadow: 0 2px 14px rgba(0,0,0,0.13);
-      padding: 22px 7px 24px 7px;
+      flex: 2 1 650px;
+      background: #1f1f29;
+      border-radius: 20px;
+      box-shadow: 0 10px 32px rgb(0 0 0 / 0.85);
+      padding: 30px 25px;
+      user-select: text;
+      min-width: 320px;
+      max-width: 100%;
     }
     .main-content h2 {
+      font-size: 26px;
       color: #4caf50;
-      font-size: 23px;
-      margin-bottom: 16px;
+      font-weight: 900;
+      margin: 0 0 20px 0;
       text-align: center;
+      letter-spacing: 0.8px;
+      user-select: text;
     }
+    /* Stats Boxes */
     .stats {
       display: flex;
-      gap: 17px;
+      gap: 20px;
       justify-content: center;
       flex-wrap: wrap;
-      margin-bottom: 16px;
-      width: 100%;
+      margin-bottom: 24px;
+      user-select: text;
     }
     .stat-box {
-      background: #232323;
-      padding: 14px 14px;
-      border-radius: 10px;
-      min-width: 110px;
-      box-shadow: 0 0 8px rgba(0,0,0,0.09);
+      background: #222831;
+      padding: 18px 26px;
+      border-radius: 14px;
+      min-width: 140px;
+      box-shadow: 0 0 10px rgb(67 233 123 / 0.6);
       text-align: center;
-      margin-bottom: 4px;
+      user-select: text;
+      transition: transform 0.25s ease;
+      cursor: default;
+    }
+    .stat-box:hover {
+      transform: scale(1.05);
     }
     .stat-box h3 {
-      margin: 0 0 5px 0;
-      font-size: 15px;
+      margin: 0 0 6px 0;
+      font-size: 16px;
       color: #90caf9;
-      font-weight: 400;
+      font-weight: 600;
+      user-select: text;
     }
     .stat-box p {
       margin: 0;
-      font-size: 16px;
-      font-weight: bold;
-      letter-spacing: 1px;
+      font-size: 18px;
+      font-weight: 700;
+      color: #b0f6a7;
+      letter-spacing: 1.2px;
+      user-select: text;
     }
-    .vip { color: #4caf50; font-weight: bold; font-size: 18px; }
-    .non-vip { color: #f44336; font-weight: bold; font-size: 18px;}
+    /* VIP and non-VIP labels */
+    .vip {
+      color: #4caf50;
+      font-weight: 700;
+      font-size: 18px;
+      user-select: text;
+    }
+    .non-vip {
+      color: #f44336;
+      font-weight: 700;
+      font-size: 18px;
+      user-select: text;
+    }
+    /* Links */
     .main-content a {
-      margin-bottom: 14px;
-      margin-top: 0;
       display: inline-block;
-      font-size: 15px;
+      margin-bottom: 20px;
+      font-size: 16px;
+      color: #90caf9;
+      user-select: text;
+      transition: color 0.3s ease;
+      text-decoration: none;
     }
+    .main-content a:hover {
+      color: #43e97b;
+      text-decoration: underline;
+    }
+    /* Table */
     .table-responsive {
       overflow-x: auto;
       width: 100%;
-      margin-top: 9px;
+      margin-top: 10px;
     }
     table {
       width: 100%;
       border-collapse: collapse;
-      background: #222;
-      border-radius: 11px;
-      font-size: 14px;
-      min-width: 430px;
+      background: #222831;
+      border-radius: 14px;
+      font-size: 15px;
+      min-width: 400px;
+      user-select: text;
     }
     th, td {
-      padding: 9px 6px;
-      border-bottom: 1px solid #303030;
+      padding: 14px 10px;
+      border-bottom: 1px solid #2b2e35;
       text-align: center;
+      user-select: text;
     }
     th {
-      background-color: #191a1b;
+      background-color: #1c1f26;
       color: #90caf9;
-      font-size: 14.5px;
-      font-weight: 600;
+      font-weight: 700;
+      letter-spacing: 0.2px;
     }
-    tr:last-child td { border-bottom: none; }
-    tr:hover { background-color: #252525; }
+    tr:last-child td {
+      border-bottom: none;
+    }
+    tr:hover {
+      background-color: #323740;
+    }
     td form button {
       background-color: #e53935 !important;
       color: #fff;
-      font-size: 15px;
-      padding: 7px 12px;
-      border-radius: 6px;
-      transition: background 0.2s;
-      margin: 0;
+      font-size: 16px;
+      padding: 8px 15px;
+      border-radius: 9px;
+      border: none;
+      transition: background 0.3s ease;
+      cursor: pointer;
+      user-select: none;
     }
-    td form button:hover { background: #b71c1c !important; }
-    /* Modal & Table For User Info */
+    td form button:hover {
+      background-color: #b71c1c !important;
+    }
+    /* Modal */
     #users-info-modal {
       position: fixed;
       top: 0; left: 0; right: 0; bottom: 0;
-      background: rgba(10,12,22,0.92);
+      background: rgba(20, 20, 20, 0.95);
       z-index: 9999;
       display: none;
       align-items: flex-start;
       justify-content: center;
       overflow-y: auto;
-      padding-top: 44px;
+      padding: 44px 12px 20px 12px;
+      user-select: none;
     }
     #users-info-table {
-      background: #19191a;
-      border-radius: 18px;
-      box-shadow: 0 8px 40px #000c;
-      max-width: 970px;
-      width: 97vw;
-      margin-bottom: 48px;
-      padding: 30px 20px;
-      overflow-x: auto;
+      background: #1e1e28;
+      border-radius: 20px;
+      box-shadow: 0 10px 36px rgb(0 0 0 / 0.85);
+      max-width: 960px;
+      width: 100%;
+      margin-bottom: 40px;
+      padding: 36px 24px 32px 24px;
+      user-select: text;
     }
     #users-info-table h3 {
       color: #4caf50;
-      margin-bottom: 17px;
+      margin-bottom: 24px;
       text-align: center;
-      font-size: 26px;
-      font-weight: bold;
+      font-size: 28px;
+      font-weight: 900;
+      letter-spacing: 0.8px;
+      user-select: text;
     }
     .close-users-info-btn {
       background: #c62828;
       color: #fff;
       border: none;
-      border-radius: 11px;
-      font-size: 18px;
-      padding: 8px 19px;
-      font-weight: bold;
-      margin-bottom: 22px;
+      border-radius: 14px;
+      font-size: 20px;
+      padding: 12px 22px;
+      font-weight: 900;
+      margin-bottom: 34px;
       float: right;
-      margin-left: 7px;
+      margin-left: 16px;
       cursor: pointer;
-      box-shadow: 0 2px 10px #0007;
+      box-shadow: 0 5px 18px #000a;
+      user-select: none;
+      transition: background 0.3s ease;
+    }
+    .close-users-info-btn:hover {
+      background: #d32f2f;
     }
     table.users-table {
       width: 100%;
       border-collapse: collapse;
-      background: #232323;
-      border-radius: 15px;
+      background: #2a2e38;
+      border-radius: 20px;
       overflow: hidden;
-      margin-top: 9px;
-      font-size: 14px;
+      font-size: 15px;
+      user-select: text;
     }
-    table.users-table th, table.users-table td {
-      padding: 10px 8px;
-      border-bottom: 1px solid #303030;
+    table.users-table th,
+    table.users-table td {
+      padding: 14px 14px;
+      border-bottom: 1px solid #2d2f34;
       text-align: center;
       vertical-align: middle;
+      user-select: text;
     }
     table.users-table th {
-      background: #191a1b;
+      background: #1c1f26;
       color: #90caf9;
-      font-size: 16px;
-      font-weight: bold;
+      font-weight: 700;
+      letter-spacing: 0.3px;
     }
-    table.users-table tr:last-child td { border-bottom: none; }
-    table.users-table tr:hover { background: #222; }
-    .session-box {
-      background: #121417;
-      border-radius: 10px;
-      padding: 6px 8px;
-      margin: 3px 0 7px 0;
-      color: #eee;
-      font-size: 13px;
-      box-shadow: 0 1px 5px #0004;
-      text-align: right;
+    table.users-table tr:last-child td {
+      border-bottom: none;
     }
-    .session-box .session-title {
-      color: #ffd700;
-      font-weight: bold;
-      margin-bottom: 2px;
-      font-size: 13.2px;
+    table.users-table tr:hover {
+      background: #394050;
     }
-    .vip-label { color: #43e97b; font-weight:bold; font-size: 17px; }
-    .non-vip-label { color: #e53935; font-weight:bold; }
-    @media (max-width: 900px) {
-      .top-bar { flex-direction: column; gap:9px; align-items:stretch; }
-      .vip-card { margin-left: 0; }
+    /* Responsive */
+    @media (max-width: 960px) {
+      .container {
+        max-width: 100%;
+        padding: 0 12px;
+        gap: 20px;
+      }
+      .vip-card {
+        flex-basis: 100%;
+        justify-content: center;
+      }
+      .sidebar {
+        max-height: 280px;
+        min-width: 100%;
+      }
+      .main-content {
+        flex-basis: 100%;
+        padding: 24px 16px;
+      }
+      .stats {
+        gap: 15px;
+        justify-content: center;
+      }
+      table.users-table th,
+      table.users-table td {
+        font-size: 13px;
+        padding: 12px 8px;
+      }
     }
-    @media (max-width: 700px) {
-      .container { max-width: 100vw; padding: 0 1vw 26vw 1vw; gap: 13px; }
-      .main-content { padding: 12px 2vw 16px 2vw;}
-      .sidebar { padding: 11px 3vw;}
-      .stats { gap: 8px;}
-      .stat-box { min-width: 90px; padding: 11px 5px;}
-      .sidebar-list { font-size: 12px; max-height: 90px;}
-      table { font-size: 12.5px;}
-      th, td { padding: 7px 2.5px; }
-    }
-    @media (max-width: 500px) {
-      .container { padding: 0 0 10vw 0;}
-      .main-content { padding: 6px 1vw 8px 1vw;}
-      .sidebar { padding: 7px 2vw;}
-      .main-content h2 { font-size: 15.5px;}
-      .stat-box h3, .stat-box p { font-size: 12px;}
-      .stat-box { padding: 7px 3px;}
-      table { font-size: 11px; min-width: 380px;}
-      .sidebar-list { font-size: 11px; }
-      th, td { padding: 5px 1.5px;}
-      .stats { flex-direction: column; align-items: stretch; gap: 3px;}
-      .vip-card input[type=email] { width:100px;}
+    @media (max-width: 600px) {
+      .vip-card {
+        flex-direction: column;
+        gap: 18px;
+        padding: 18px 24px;
+      }
+      .top-bar {
+        flex-direction: column;
+        gap: 14px;
+      }
+      .top-btn {
+        min-width: 100%;
+      }
+      table.users-table {
+        font-size: 12px;
+        min-width: 350px;
+      }
+      table.users-table th,
+      table.users-table td {
+        padding: 10px 6px;
+      }
     }
   </style>
 </head>
 <body>
-  <!-- الشريط العلوي للأزرار -->
-  <div class="top-bar">
-    <a id="main-btn" class="top-btn" href="{{ url_for('start') }}">🏠 العودة للرئيسية</a>
-    <button id="sync-btn" class="top-btn">Syncrotizing User Data</button>
-    <button id="show-users-info" class="top-btn">Show Users Info</button>
-    <div id="sync-msg"></div>
+  <!-- Top Bar -->
+  <div class="top-bar" role="navigation" aria-label="شريط الأدوات">
+    <a id="main-btn" class="top-btn" href="{{ url_for('start') }}" role="button" tabindex="0" aria-label="العودة للرئيسية">🏠 العودة للرئيسية</a>
+    <button id="sync-btn" class="top-btn" aria-label="زر مزامنة بيانات المستخدم">مزامنة بيانات المستخدم</button>
+    <button id="show-users-info" class="top-btn" aria-label="زر عرض معلومات المستخدمين">عرض معلومات المستخدمين</button>
+    <div id="sync-msg" aria-live="polite" aria-atomic="true" role="status"></div>
   </div>
-  <form method="POST" action="/add_vip" class="vip-card">
-    <div>
-      <h3>➕ إضافة VIP جديد</h3>
-      <input type="email" name="email" placeholder="البريد الإلكتروني" required />
-      <button type="submit">إضافة</button>
-    </div>
+
+  <!-- Add VIP User -->
+  <form method="POST" action="/add_vip" class="vip-card" role="form" aria-label="إضافة مستخدم VIP">
+    <h3>➕ إضافة VIP جديد</h3>
+    <input type="email" name="email" placeholder="البريد الإلكتروني" required aria-required="true" aria-label="البريد الإلكتروني للمستخدم الجديد" />
+    <button type="submit" aria-label="زر إضافة المستخدم">إضافة</button>
   </form>
-  <div class="container">
-    <!-- قائمة VIP -->
-    <div class="sidebar">
-      <h3 style="margin-top:6px;">⭐ قائمة إيميلات الـ VIP ({{ vip_emails | length }})</h3>
-      <div class="sidebar-list">
+
+  <!-- Main Container -->
+  <div class="container" role="main">
+    <!-- VIP Emails Sidebar -->
+    <aside class="sidebar" role="complementary" aria-label="قائمة إيميلات الـ VIP">
+      <h3>⭐ قائمة إيميلات الـ VIP ({{ vip_emails | length }})</h3>
+      <div class="sidebar-list" tabindex="0" role="list" aria-label="قائمة إيميلات الـ VIP">
         {% for vip in vip_emails %}
-          <p>{{ vip }}</p>
+          <p role="listitem">{{ vip }}</p>
         {% endfor %}
       </div>
-    </div>
-    <!-- لوحة التحكم الرئيسية -->
-    <div class="main-content">
+    </aside>
+
+    <!-- Main Content -->
+    <section class="main-content">
       <h2>📋 لوحة تحكم VIP</h2>
-      <div id="users-info-modal">
+
+      <!-- Users Info Modal -->
+      <div id="users-info-modal" role="dialog" aria-modal="true" aria-labelledby="modal-title" tabindex="-1">
         <div id="users-info-table"></div>
       </div>
-      <div class="stats">
-        <div class="stat-box">
+
+      <!-- Stats Section -->
+      <div class="stats" role="region" aria-label="إحصائيات المستخدمين">
+        <div class="stat-box" tabindex="0">
           <h3>عدد المستخدمين</h3>
           <p>{{ total_users }}</p>
         </div>
-        <div class="stat-box">
+        <div class="stat-box" tabindex="0">
           <h3>المستخدمون النشطون اليوم</h3>
           <p>{{ active_today }}</p>
         </div>
       </div>
+
+      <!-- Users Table -->
       <div class="table-responsive">
-        <table>
-          <tr>
-            <th>البريد الإلكتروني</th>
-            <th>عدد الأسئلة</th>
-            <th>VIP</th>
-            <th>حذف</th>
-          </tr>
-          {% for user, count in user_counters.items() %}
-          <tr>
-            <td>{{ user }}</td>
-            <td>{{ count }}</td>
-            <td>
-              {% if user in full_access_users %}
-                <span class="vip">✔️</span>
-              {% else %}
-                <span class="non-vip">❌</span>
-              {% endif %}
-            </td>
-            <td>
-              <form method="POST" action="/delete_user" style="margin:0;">
-                <input type="hidden" name="email" value="{{ user }}">
-                <button type="submit" title="حذف المستخدم">🗑️</button>
-              </form>
-            </td>
-          </tr>
-          {% endfor %}
+        <table class="users-table" role="table" aria-describedby="modal-title">
+          <thead>
+            <tr>
+              <th scope="col">البريد الإلكتروني</th>
+              <th scope="col">عدد الأسئلة</th>
+              <th scope="col">VIP</th>
+              <th scope="col">حذف</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for user, count in user_counters.items() %}
+            <tr>
+              <td>{{ user }}</td>
+              <td>{{ count }}</td>
+              <td>
+                {% if user in full_access_users %}
+                  <span class="vip" aria-label="مستخدم VIP">✔️</span>
+                {% else %}
+                  <span class="non-vip" aria-label="غير مستخدم VIP">❌</span>
+                {% endif %}
+              </td>
+              <td>
+                <form method="POST" action="/delete_user" style="margin:0;">
+                  <input type="hidden" name="email" value="{{ user }}">
+                  <button type="submit" title="حذف المستخدم" aria-label="زر حذف المستخدم">🗑️</button>
+                </form>
+              </td>
+            </tr>
+            {% endfor %}
+          </tbody>
         </table>
       </div>
-    </div>
+    </section>
   </div>
-  <!-- Modal and Table Script -->
+
+  <!-- Modal & Table Script -->
   <script>
     document.getElementById('show-users-info').onclick = function() {
-      fetch('/get_all_users_info').then(res=>res.json()).then(data=>{
-        let html = `<button class="close-users-info-btn" onclick="document.getElementById('users-info-modal').style.display='none';">Close</button>`;
-        html += `<h3>Users Information</h3>`;
-        html += `<table class="users-table"><thead>
-          <tr>
-            <th>Email</th>
-            <th>Questions Counter</th>
-            <th>VIP</th>
-            <th>Sessions<br><span style="font-size:12px;">(Newest on Top)</span></th>
-          </tr></thead><tbody>`;
-        for(let user of data) {
-          html += `<tr>
-            <td style="font-weight:bold;color:#90caf9;">${user.email}</td>
-            <td>${user.counter}</td>
-            <td>${user.is_vip ? "<span class='vip-label'>✔️ VIP</span>" : "<span class='non-vip-label'>✘</span>"}</td>
-            <td style="min-width:180px;max-width:400px;">`;
-          if(user.sessions && user.sessions.length > 0) {
-            for(let s of user.sessions) {
-              html += `<div class="session-box">
-                <div class="session-title">${s.date || ""} ${s.subject ? " - " + s.subject : ""}</div>
-                Score: <b>${s.score}</b> | Attempted: <b>${s.attempted}</b><br>
-                Last Index: <b>${s.last_question_index || ""}</b>
-              </div>`;
+      fetch('/get_all_users_info').then(res => res.json()).then(data => {
+        let html = `
+          <button class="close-users-info-btn" onclick="document.getElementById('users-info-modal').style.display='none';" aria-label="إغلاق النافذة">✖️ إغلاق</button>
+          <h3 id="modal-title">بيانات المستخدمين</h3>
+          <table class="users-table" role="grid" aria-describedby="modal-title">
+            <thead>
+              <tr>
+                <th scope="col">البريد الإلكتروني</th>
+                <th scope="col">عدد الأسئلة</th>
+                <th scope="col">VIP</th>
+                <th scope="col">الجلسات<br><span style="font-size:12px;">(الأحدث في الأعلى)</span></th>
+              </tr>
+            </thead>
+            <tbody>`;
+        for (let user of data) {
+          html += `
+            <tr>
+              <td style="font-weight:bold; color:#90caf9;">${user.email}</td>
+              <td>${user.counter}</td>
+              <td>${user.is_vip ? "<span class='vip' aria-label='مستخدم VIP'>✔️ VIP</span>" : "<span class='non-vip' aria-label='غير مستخدم VIP'>✘</span>"}</td>
+              <td style="min-width:180px; max-width:400px; text-align:right;">`;
+          if (user.sessions && user.sessions.length > 0) {
+            html += `<table style="width:100%; border-collapse: collapse; font-size: 13px; color: #ddd; user-select: text;">
+                       <thead>
+                         <tr style="border-bottom: 1px solid #555;">
+                           <th style="padding: 4px 6px; text-align: right;">التاريخ</th>
+                           <th style="padding: 4px 6px;">المادة</th>
+                           <th style="padding: 4px 6px;">النقاط</th>
+                           <th style="padding: 4px 6px;">المحاولات</th>
+                           <th style="padding: 4px 6px;">آخر سؤال</th>
+                         </tr>
+                       </thead>
+                       <tbody>`;
+            for (let s of user.sessions) {
+              html += `
+                         <tr>
+                           <td style="padding: 3px 6px; text-align: right;">${s.date || ''}</td>
+                           <td style="padding: 3px 6px;">${s.subject ? s.subject : '-'}</td>
+                           <td style="padding: 3px 6px;">${s.score}</td>
+                           <td style="padding: 3px 6px;">${s.attempted}</td>
+                           <td style="padding: 3px 6px;">${s.last_question_index || ''}</td>
+                         </tr>`;
             }
+            html += `</tbody></table>`;
           } else {
-            html += "<span style='color:#ccc;'>No sessions</span>";
+            html += `<span style="color:#ccc;">لا توجد جلسات</span>`;
           }
-          html += "</td></tr>";
+          html += `</td></tr>`;
         }
-        html += "</tbody></table>";
+        html += `</tbody></table>`;
         document.getElementById('users-info-table').innerHTML = html;
         document.getElementById('users-info-modal').style.display = "flex";
+        document.getElementById('users-info-modal').focus();
       });
-    }
+    };
 
     document.getElementById('sync-btn').onclick = function() {
-      document.getElementById('sync-msg').innerHTML = "<span style='color:#ffd700;'>Syncing, please wait...</span>";
-      fetch('/sync_user_data').then(r=>r.json()).then(data=>{
-        if(data.success) {
-          document.getElementById('sync-msg').innerHTML = "<span style='color:#43e97b;'>✔️ Sync Done!</span>";
-        } else {
-          document.getElementById('sync-msg').innerHTML = "<span style='color:#e53935;'>✘ Sync Failed</span>";
-        }
-      }).catch(()=>{
-        document.getElementById('sync-msg').innerHTML = "<span style='color:#e53935;'>✘ Sync Failed</span>";
-      });
-    }
+      const syncMsg = document.getElementById('sync-msg');
+      syncMsg.textContent = "جارٍ التزامن، يرجى الانتظار...";
+      syncMsg.style.color = "#ffd600";
+
+      fetch('/sync_user_data')
+        .then(response => response.json())
+        .then(data => {
+          if (data.success) {
+            syncMsg.textContent = "✔️ تم التزامن بنجاح";
+            syncMsg.style.color = "#43e97b";
+          } else {
+            syncMsg.textContent = "✘ فشل في التزامن";
+            syncMsg.style.color = "#e53935";
+          }
+        })
+        .catch(() => {
+          syncMsg.textContent = "✘ فشل في التزامن";
+          syncMsg.style.color = "#e53935";
+        });
+    };
   </script>
 </body>
 </html>

@@ -102,13 +102,16 @@
   <div class="container">
     <div class="card" onclick="goToSpecialty('dentistry')">Dentistry</div>
     <div class="card" onclick="alert('Coming soon...')">ثانوي عام</div>
-    <div class="card" onclick="alert('Coming soon...')">إعدادي</div>
+    
+    <!-- كارت إعدادي مرتبط بصفحة secondary.html -->
+    <div class="card" onclick="goToSecondary()">إعدادي</div>
+    
     <div class="card" onclick="alert('Coming soon...')">مسابقات دينية</div>
     <div class="card" onclick="alert('Coming soon...')">anesthesia</div>
   </div>
 
   <!-- عنصر الصوت -->
-  <audio id="hover-audio" src="{{ url_for('static', filename='hover_main.mp3') }}"></audio>
+  <audio id="hover-audio" src="static/hover_main.mp3"></audio>
 
   <script>
     function goToSpecialty(name) {
@@ -117,6 +120,10 @@
       } else {
         alert("هذا التخصص غير متاح حالياً.");
       }
+    }
+
+    function goToSecondary() {
+      window.location.href = "/secondary";
     }
 
     // تفعيل صوت الهوفر على الكروت
@@ -128,7 +135,7 @@
           try {
             audio.currentTime = 0;
             audio.play();
-          } catch (e) { /* ignore errors for first hover */ }
+          } catch (e) { /* تجاهل أخطاء التشغيل الأول */ }
         });
       });
     });
