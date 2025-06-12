@@ -133,7 +133,7 @@ subject_start_indexes = {
     "Fixed Prosthodontic": 4601,
     "Pedodontic": 3290,
     "Orthodontic": 3511,
-    "Diagnosis": 4,
+    "Diagnosis": 10,
     "Radiology": 3880,
     "Removable Prosthodontic": 4804,
     "Pathology": 5223,
